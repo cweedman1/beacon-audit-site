@@ -1,0 +1,40 @@
+body {
+    font-family: Arial, sans-serif;
+    max-width: 900px;
+    margin: auto;
+    padding: 2rem;
+    line-height: 1.6;
+    background: #0d1117;
+    color: #f0f6fc;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+h1 {
+    font-size: 3rem;
+}
+
+.hero {
+    margin-bottom: 3rem;
+}
+
+.button {
+    display: inline-block;
+    background: #238636;
+    color: white;
+    text-decoration: none;
+    padding: 12px 24px;
+    border-radius: 6px;
+}
+
+.button:hover {
+    background: #2ea043;
+}
+
+footer {
+    margin-top: 4rem;
+    opacity: .7;
+}
