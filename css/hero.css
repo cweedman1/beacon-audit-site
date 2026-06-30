@@ -1,0 +1,69 @@
+.hero {
+  position: relative;
+  overflow: hidden;
+  min-height: calc(100vh - 92px);
+  border-bottom: 1px solid rgba(48, 57, 70, 0.85);
+  background: #080b0e;
+}
+
+.hero--compact {
+  min-height: 72vh;
+}
+
+.hero > picture {
+  position: absolute;
+  inset: 0;
+}
+
+.hero__image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.88;
+}
+
+.hero::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  background:
+    linear-gradient(90deg, rgba(16, 20, 24, 0.62), rgba(16, 20, 24, 0.42) 48%, rgba(16, 20, 24, 0.12)),
+    linear-gradient(0deg, var(--bg), rgba(16, 20, 24, 0.04) 38%),
+    linear-gradient(180deg, rgba(16, 20, 24, 0.18), transparent 34%);
+}
+
+.hero__content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  min-height: inherit;
+  width: min(100% - 32px, var(--max));
+  margin: 0 auto;
+  flex-direction: column;
+  justify-content: center;
+  padding: 104px 0 126px;
+}
+
+.eyebrow {
+  color: var(--gold);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.hero p {
+  max-width: 640px;
+  font-size: clamp(1.1rem, 2vw, 1.35rem);
+  text-shadow: 0 1px 18px rgba(0, 0, 0, 0.5);
+}
+
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 22px;
+}

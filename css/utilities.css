@@ -1,0 +1,33 @@
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.accent-gold {
+  color: var(--gold);
+}
+
+.accent-blue {
+  color: var(--blue);
+}
+
+.accent-success {
+  color: var(--success);
+}
+
+.stack {
+  display: grid;
+  gap: 18px;
+}
+
+.section-offset {
+  margin-top: 48px;
+}

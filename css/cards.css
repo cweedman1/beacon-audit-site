@@ -1,0 +1,223 @@
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.card {
+  overflow: hidden;
+  border: 1px solid rgba(48, 57, 70, 0.9);
+  border-radius: var(--radius);
+  background: var(--panel);
+  box-shadow: var(--shadow-soft);
+  cursor: default;
+  color: inherit;
+  text-decoration: none;
+  transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(216, 183, 92, 0.58);
+  background: var(--panel-strong);
+  box-shadow: 0 24px 62px rgba(0, 0, 0, 0.34), 0 0 0 1px rgba(216, 183, 92, 0.08);
+}
+
+.card__image {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  background: #0c1014;
+}
+
+.card__body {
+  padding: 30px;
+}
+
+.card__body p {
+  font-size: 1.02rem;
+  line-height: 1.68;
+}
+
+.card__body h3 {
+  min-height: 2.8rem;
+  margin-bottom: 12px;
+}
+
+.card__meta {
+  color: var(--gold);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.metric-card {
+  border-left: 3px solid var(--success);
+}
+
+.knowledge-tile {
+  min-height: 250px;
+  cursor: pointer;
+}
+
+.knowledge-tile .card__body {
+  min-height: inherit;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.card-link {
+  cursor: pointer;
+}
+
+.card-link:hover h3,
+.card-link:focus-visible h3 {
+  color: var(--gold);
+}
+
+.topic-grid {
+  display: grid;
+  gap: 24px;
+}
+
+.topic-card {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.42fr) minmax(0, 1fr);
+  gap: 28px;
+  padding: 32px;
+  align-items: stretch;
+  min-height: 100%;
+}
+
+.topic-card > div:first-child {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.topic-card .icon {
+  width: 30px;
+  height: 30px;
+  border-color: rgba(216, 183, 92, 0.26);
+  background: rgba(216, 183, 92, 0.065);
+  margin-bottom: 18px;
+}
+
+.topic-card .icon svg {
+  width: 17px;
+  height: 17px;
+}
+
+.topic-card h2 {
+  margin-bottom: 12px;
+}
+
+.topic-card p:not(.card__meta) {
+  margin-bottom: 0;
+}
+
+.topic-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-content: start;
+  align-items: flex-start;
+  align-self: stretch;
+  min-width: 0;
+}
+
+.topic-links a,
+.article-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(48, 57, 70, 0.9);
+  border-radius: 10px;
+  color: var(--muted);
+  text-decoration: none;
+  padding: 9px 12px;
+  transition: color 160ms ease, border-color 160ms ease, background 160ms ease;
+}
+
+.topic-links svg,
+.article-links svg {
+  width: 16px;
+  height: 16px;
+  color: var(--gold);
+  flex: 0 0 auto;
+}
+
+.topic-links a:hover,
+.article-links a:hover {
+  border-color: rgba(216, 183, 92, 0.62);
+  background: rgba(216, 183, 92, 0.08);
+  color: var(--text);
+}
+
+.report-preview {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  margin: 0;
+  border: 1px solid rgba(216, 183, 92, 0.38);
+  border-radius: 20px;
+  background:
+    linear-gradient(180deg, rgba(28, 34, 42, 0.96), rgba(13, 17, 22, 0.98)),
+    var(--panel);
+  box-shadow: 0 22px 58px rgba(0, 0, 0, 0.34), 0 0 0 1px rgba(255, 255, 255, 0.025) inset;
+  padding: 18px;
+  transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+  isolation: isolate;
+}
+
+.report-preview--wide {
+  max-width: 1280px;
+  margin-inline: auto;
+}
+
+.report-preview--compact {
+  margin-top: 28px;
+  min-width: min(100%, 520px);
+}
+
+.report-preview:hover {
+  transform: translateY(-2px);
+  border-color: rgba(216, 183, 92, 0.56);
+  box-shadow: 0 26px 68px rgba(0, 0, 0, 0.38), 0 0 0 1px rgba(216, 183, 92, 0.05) inset;
+}
+
+.report-preview img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  border: 0;
+  border-radius: 16px;
+  background: #0f1318;
+  box-shadow: none;
+}
+
+.report-preview figcaption {
+  color: var(--muted);
+  font-size: 0.95rem;
+  padding: 14px 6px 2px 10px;
+}
+
+.icon {
+  display: inline-flex;
+  width: 34px;
+  height: 34px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(216, 183, 92, 0.35);
+  border-radius: 10px;
+  color: var(--gold);
+  margin-bottom: 16px;
+}
+
+.icon svg {
+  width: 18px;
+  height: 18px;
+}

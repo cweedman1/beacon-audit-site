@@ -1,0 +1,59 @@
+.form {
+  display: grid;
+  gap: 18px;
+}
+
+.field {
+  display: grid;
+  gap: 8px;
+}
+
+label {
+  color: var(--text);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+input,
+textarea,
+select {
+  width: 100%;
+  border: 1px solid rgba(48, 57, 70, 0.95);
+  border-radius: 12px;
+  background: #11161c;
+  color: var(--text);
+  font: inherit;
+  padding: 15px 16px;
+  transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: rgba(216, 183, 92, 0.68);
+  background: #121820;
+  box-shadow: 0 0 0 4px rgba(216, 183, 92, 0.12);
+  outline: none;
+}
+
+textarea {
+  min-height: 144px;
+  resize: vertical;
+}
+
+.scan-panel {
+  border: 1px solid rgba(48, 57, 70, 0.95);
+  border-radius: var(--radius);
+  background: var(--panel);
+  padding: 32px;
+  box-shadow: var(--shadow-soft);
+}
+
+.scan-result {
+  min-height: 96px;
+  border: 1px solid rgba(48, 57, 70, 0.95);
+  border-radius: 14px;
+  background: #11161c;
+  color: var(--muted);
+  padding: 18px;
+}

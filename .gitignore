@@ -1,0 +1,17 @@
+# Development artifacts
+reports/*
+!reports/
+!reports/sample-report.html
+!reports/report-template.html
+reports/lighthouse/
+*.log
+*.tmp
+node_modules/
+.cache/
+.vscode/settings.json
+before-scores.json
+run-results.json
+coverage/
+dist/
+.DS_Store
+Thumbs.db

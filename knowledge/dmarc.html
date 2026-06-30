@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DMARC Policy Explained | Beacon Knowledge</title>
+  <meta name="description" content="A plain-English guide to DMARC, email policy checks, and what DMARC results mean in a Beacon website review.">
+  <link rel="canonical" href="https://beaconaudit.com/knowledge/dmarc.html">
+  <meta property="og:title" content="DMARC Policy Explained"><meta property="og:description" content="Understand DMARC email policy and how Beacon reviews it publicly."><meta property="og:type" content="article"><meta property="og:url" content="https://beaconaudit.com/knowledge/dmarc.html">
+  <meta name="twitter:card" content="summary"><meta name="twitter:title" content="DMARC Policy Explained"><meta name="twitter:description" content="DMARC tells mail providers what to do when email does not pass trust checks.">
+  <link rel="icon" href="/assets/logo/favicon.ico" sizes="any"><link rel="icon" href="/assets/logo/favicon.png" type="image/png"><link rel="icon" href="/assets/logo/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/assets/logo/apple-touch-icon.png">
+  <link rel="stylesheet" href="/css/main.css"><link rel="stylesheet" href="/css/nav.css"><link rel="stylesheet" href="/css/buttons.css"><link rel="stylesheet" href="/css/cards.css"><link rel="stylesheet" href="/css/sections.css"><link rel="stylesheet" href="/css/footer.css"><link rel="stylesheet" href="/css/responsive.css"><link rel="stylesheet" href="/css/utilities.css">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"DMARC Policy Explained","description":"A plain-English guide to DMARC policy for business websites and email.","url":"https://beaconaudit.com/knowledge/dmarc.html"}</script>
+</head>
+<body>
+  <header class="site-header"><nav class="nav" aria-label="Primary navigation">
+      <a class="brand" href="/index.html"><img src="/assets/logo/logo-nav.png" alt="" width="146" height="106" decoding="async"><span>Beacon Audit</span></a>
+      <button class="nav-toggle" type="button" data-nav-toggle aria-controls="primary-nav" aria-expanded="false"><span class="sr-only">Menu</span></button>
+      <div class="nav-links" id="primary-nav" data-nav-links>
+        <a href="/">Home</a>
+        <a href="/how-it-works.html">How It Works</a>
+        <a href="/scan.html">Free Scan</a>
+        <a href="/knowledge.html">Knowledge Center</a>
+        <a href="/contact.html">Contact</a>
+      </div>
+    </nav></header>
+  <main class="section">
+    <div class="container article-layout">
+      <article class="article-body">
+        <header class="article-section"><p class="eyebrow">Security</p><h1>DMARC Policy Explained</h1><p>DMARC helps domain owners tell mail providers how to handle email that fails common trust checks. It is a policy layer that works with SPF and DKIM.</p></header>
+        <div class="callout"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></span><p><strong>Common Fix</strong>Start with monitoring before moving to stricter mail handling policies.</p></div>
+        <section class="article-section"><h2>What is it?</h2><p>DMARC stands for Domain-based Message Authentication, Reporting and Conformance. In plain English, it is a public instruction for mail providers.</p><p>A DMARC policy can ask providers to monitor, quarantine, or reject messages that do not pass the right checks.</p></section>
+        <section class="article-section"><h2>Why business owners care</h2><p>DMARC helps protect how your domain is used in email. It also gives your team a clearer path for improving email trust over time.</p><p>A strict policy should be set carefully. Moving too quickly can affect legitimate mail if SPF or DKIM is not ready.</p></section>
+        <section class="article-section"><h2>What Beacon reviews</h2><p>Beacon checks whether a DMARC record exists and what policy it declares. Beacon also looks for reporting addresses and basic syntax issues.</p><p>Beacon does not read private email reports or access your mailbox. It reviews the public DMARC record only.</p></section>
+        <section class="article-section"><h2>Where the information comes from</h2><p>The information comes from a public DNS TXT record for DMARC.</p><p>Mail providers use this record when checking incoming messages.</p><p>Beacon records what was visible during the review and explains the policy in plain English.</p></section>
+        <section class="article-section"><h2>How to read your report</h2><p>A DMARC result may show that your domain is monitoring mail, partially enforcing a policy, or not publishing a policy. None of those results should be judged without context.</p><p>The report should help you understand whether the policy matches your current email setup and business tolerance for change.</p></section>
+        <section class="article-section article-section--warning"><h2>Common mistakes</h2><div class="callout callout--warning"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg></span><p><strong>Common misunderstanding</strong>Do not treat one warning as the whole story. Read it with the rest of the report, then confirm the recommended change with the person who manages the website.</p></div></section>
+        <section class="article-section article-section--recommendation"><h2>Recommended next step</h2><p>Confirm SPF and DKIM before tightening DMARC. Then move policy changes gradually with help from your email provider or IT partner.</p><p>If no DMARC record exists, start with a monitoring policy and review what mail services are actually sending for your domain.</p></section>
+        <section class="article-section"><h2>Related topics</h2><div class="article-links"><a href="/knowledge/spf.html">SPF</a><a href="/knowledge/dkim.html">DKIM</a><a href="/knowledge/dns.html">DNS</a></div></section>
+        <section class="article-section"><h2>Want Beacon to check this on your website?</h2><p><a class="button button--primary" href="/scan.html">Run a Free Website Review</a></p></section>
+      </article>
+      <aside class="article-aside" aria-label="Article navigation"><p class="card__meta">Section</p><p>Security</p><p class="card__meta">Next Topic</p><p><a class="link-arrow" href="/knowledge/ssl.html">SSL Review</a></p><p><a class="link-arrow" href="/knowledge.html">Knowledge Center</a></p></aside>
+    </div>
+  </main>
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div>
+        <strong>Beacon Audit</strong>
+        <p>A product of EVO Engineering</p>
+        <p>Clear.</p>
+        <p>Practical.</p>
+        <p>Plain English.</p>
+        <p class="footer-meta">&copy; 2026 EVO Engineering</p>
+      </div>
+      <div class="footer-links">
+        <a href="/index.html">Home</a>
+        <a href="/how-it-works.html">How It Works</a>
+        <a href="/scan.html">Free Scan</a>
+        <a href="/knowledge.html">Knowledge Center</a>
+        <a href="/contact.html">Contact</a>
+        <a href="/privacy.html">Privacy</a>
+        <a href="/terms.html">Terms</a>
+      </div>
+    </div>
+  </footer>
+  <script src="/js/nav.js" defer></script>
+</body>
+</html>

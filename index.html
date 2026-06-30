@@ -1,63 +1,269 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Beacon Audit</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Beacon Audit | Website Reviews for Small Businesses</title>
+  <meta name="description" content="Beacon Audit reviews your public website for security, performance, SEO, accessibility and digital trust. Practical recommendations in plain English.">
+  <link rel="canonical" href="https://beaconaudit.com/">
+  <meta property="og:title" content="Beacon Audit | Website Reviews for Small Businesses">
+  <meta property="og:description" content="Beacon Audit reviews your public website for security, performance, SEO, accessibility and digital trust. Practical recommendations in plain English.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://beaconaudit.com/">
+  <meta property="og:image" content="https://beaconaudit.com/assets/images/index-hero.webp">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Beacon Audit | Website Reviews for Small Businesses">
+  <meta name="twitter:description" content="Practical website recommendations in plain English.">
+  <link rel="icon" href="/assets/logo/favicon.ico" sizes="any">
+  <link rel="icon" href="/assets/logo/favicon.png" type="image/png">
+  <link rel="icon" href="/assets/logo/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/assets/logo/apple-touch-icon.png">
+  
+  <link rel="preload" href="/assets/images/index-hero-900.webp" as="image" media="(max-width: 860px)" fetchpriority="high">
+  <link rel="preload" href="/assets/images/index-hero.webp" as="image" media="(min-width: 861px)" fetchpriority="high">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/nav.css">
+  <link rel="stylesheet" href="/css/hero.css">
+  <link rel="stylesheet" href="/css/buttons.css">
+  <link rel="stylesheet" href="/css/cards.css">
+  <link rel="stylesheet" href="/css/sections.css">
+  <link rel="stylesheet" href="/css/forms.css">
+  <link rel="stylesheet" href="/css/footer.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+  <link rel="stylesheet" href="/css/utilities.css">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"ProfessionalService","name":"Beacon Audit","url":"https://beaconaudit.com/","logo":"https://beaconaudit.com/assets/logo/logo.png","description":"Beacon Audit reviews public websites for security, performance, SEO, accessibility and digital trust, with practical recommendations in plain English.","areaServed":"United States","serviceType":"Website review"}</script>
 </head>
 <body>
+  <header class="site-header">
+    <nav class="nav" aria-label="Primary navigation">
+      <a class="brand" href="/index.html"><img src="/assets/logo/logo-nav.png" alt="" width="146" height="106" decoding="async"><span>Beacon Audit</span></a>
+      <button class="nav-toggle" type="button" data-nav-toggle aria-controls="primary-nav" aria-expanded="false"><span class="sr-only">Menu</span></button>
+      <div class="nav-links" id="primary-nav" data-nav-links>
+        <a href="/">Home</a>
+        <a href="/how-it-works.html">How It Works</a>
+        <a href="/scan.html">Free Scan</a>
+        <a href="/knowledge.html">Knowledge Center</a>
+        <a href="/contact.html">Contact</a>
+      </div>
+    </nav>
+  </header>
 
-<header>
-    <h1>Beacon Audit</h1>
-    <p>Find hidden website risks before they become business problems.</p>
-</header>
+  <main>
+    <section class="hero">
+      <picture><source media="(max-width: 860px)" srcset="/assets/images/index-hero-900.webp" width="900" height="600" type="image/webp"><img class="hero__image" src="/assets/images/index-hero.webp" alt="Lighthouse beam over dark water" width="1800" height="1201" fetchpriority="high" decoding="async"></picture>
+      <div class="hero__content">
+        <p class="eyebrow">WEBSITE REVIEW</p>
+        <h1>Find what's holding your website back.</h1>
+        <p>Beacon reviews the same public signals your customers, search engines and browsers see every day. We explain what they mean, identify the biggest opportunities, and organize practical next steps in plain English.</p>
+        <div class="hero__actions">
+          <a class="button button--primary" href="/scan.html">Run Free Website Review</a>
+          <a class="button button--secondary" href="/reports/sample-report.html">See Sample Report</a>
+        </div>
+      </div>
+    </section>
 
-<main>
+    <section class="section section--panel" aria-labelledby="report-heading">
+      <div class="container product-proof">
+        <div class="product-proof__copy">
+          <p class="eyebrow">Report preview</p>
+          <h2 id="report-heading">See exactly what your customers see.</h2>
+          <p>Beacon reviews the same public signals that search engines, browsers and customers already see.</p>
+          <p>Instead of pages of technical output, Beacon organizes everything into one clear report with practical recommendations.</p>
+        </div>
+        <figure class="report-preview report-preview--wide">
+          <picture>
+            <source srcset="/assets/images/report-overview-640.webp 640w, /assets/images/report-overview-960.webp 960w, /assets/images/report-overview.webp 1400w" sizes="(max-width: 860px) 100vw, 1180px" type="image/webp">
+            <img src="/assets/images/report-overview.webp" alt="Beacon report overview showing website health categories" width="1400" height="633" loading="lazy" decoding="async">
+          </picture>
+          <figcaption>A quick summary of what needs attention first.</figcaption>
+        </figure>
+      </div>
+    </section>
 
-<section class="hero">
-    <h2>Performance. Security. Continuity.</h2>
+    <section class="section" aria-labelledby="reviews-heading">
+      <div class="container section__header">
+        <div>
+          <p class="eyebrow">Website health</p>
+          <h2 id="reviews-heading">What Beacon Reviews</h2>
+        </div>
+        <p>Your customers only see the finished website. We review the systems behind it.</p>
+      </div>
+      <div class="container card-grid">
+        <a class="card card-link" href="/knowledge.html#security">
+          <img class="card__image" src="/assets/images/index-security.webp" alt="Secure vault door" loading="lazy" decoding="async">
+          <div class="card__body">
+            <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 5 6v5c0 5 3 8 7 10 4-2 7-5 7-10V6l-7-3Z"/></svg></span>
+            <p class="card__meta">Security</p>
+            <h3>Security</h3>
+            <p>Browser security, HTTPS, DNS, SPF, DKIM and DMARC.</p>
+          </div>
+        </a>
+        <a class="card card-link" href="/knowledge.html#quality">
+          <img class="card__image" src="/assets/images/index-performance.webp" alt="Analog speedometer" loading="lazy" decoding="async">
+          <div class="card__body">
+            <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 14a8 8 0 1 1 16 0"/><path d="m12 14 4-5"/><path d="M4 18h16"/></svg></span>
+            <p class="card__meta">Quality</p>
+            <h3>Quality</h3>
+            <p>Performance, SEO, accessibility and page experience.</p>
+          </div>
+        </a>
+        <a class="card card-link" href="/knowledge.html#continuity">
+          <img class="card__image" src="/assets/images/index-knowledge.webp" alt="Library shelves and reading tables" loading="lazy" decoding="async">
+          <div class="card__body">
+            <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5Z"/></svg></span>
+            <p class="card__meta">Stewardship</p>
+            <h3>Stewardship</h3>
+            <p>Documentation, maintainability and long-term website health.</p>
+          </div>
+        </a>
+      </div>
+    </section>
 
-    <p>
-        Beacon Audit helps businesses understand
-        website performance, security posture,
-        ownership risks, hosting dependencies,
-        and continuity concerns.
-    </p>
+    <section class="section section--panel" aria-labelledby="process-heading">
+      <div class="container section__header">
+        <div>
+          <p class="eyebrow">Process</p>
+          <h2 id="process-heading">How Beacon Works</h2>
+        </div>
+        <p>Beacon uses familiar website review tools, including Lighthouse, SSL Labs, SecurityHeaders.com and DNS checks, then turns the output into a clear owner-ready guide.</p>
+      </div>
+      <div class="container method-grid">
+        <article class="method-block method-block--simple">
+          <div class="method-index">01</div>
+          <div>
+            <h3>Review</h3>
+            <p>Beacon checks public website signals using industry-standard tools.</p>
+          </div>
+        </article>
+        <article class="method-block method-block--simple">
+          <div class="method-index">02</div>
+          <div>
+            <h3>Explain</h3>
+            <p>Technical findings become plain English recommendations.</p>
+          </div>
+        </article>
+        <article class="method-block method-block--simple">
+          <div class="method-index">03</div>
+          <div>
+            <h3>Improve</h3>
+            <p>Recommendations are prioritized by impact, effort and business value.</p>
+          </div>
+        </article>
+      </div>
+    </section>
 
-    <a href="mailto:chris@beacon-audit.com" class="button">
-        Request an Audit
-    </a>
-</section>
+    <section class="section" aria-labelledby="owners-heading">
+      <div class="container split">
+        <div>
+          <p class="eyebrow">Business owners</p>
+          <h2 id="owners-heading">Why Business Owners Use Beacon</h2>
+          <ul class="feature-list">
+            <li>Know where to spend money first.</li>
+            <li>Avoid unnecessary redesigns.</li>
+            <li>Understand technical reports.</li>
+            <li>Improve customer trust.</li>
+            <li>Protect search visibility.</li>
+          </ul>
+          <figure class="report-preview report-preview--compact">
+            <picture>
+              <source srcset="/assets/images/current-website-health-640.webp 640w, /assets/images/current-website-health-960.webp 960w, /assets/images/current-website-health.webp 1132w" sizes="(max-width: 860px) 100vw, 640px" type="image/webp">
+              <img src="/assets/images/current-website-health.webp" alt="Beacon current website health summary" width="1132" height="290" loading="lazy" decoding="async">
+            </picture>
+            <figcaption>Business owners see a clear health summary before deciding what to change.</figcaption>
+          </figure>
+        </div>
+        <img src="/assets/images/index-stewardship.webp" alt="Hands pruning a plant for healthy growth" loading="lazy" decoding="async">
+      </div>
+    </section>
 
-<section>
-    <h3>What We Audit</h3>
+    <section class="section section--panel" aria-labelledby="knowledge-heading">
+      <div class="container section__header">
+        <div>
+          <p class="eyebrow">Knowledge Center</p>
+          <h2 id="knowledge-heading">Learn What Your Report Means</h2>
+        </div>
+        <p>Use the Knowledge Center to understand the checks inside a Beacon review before deciding what to improve.</p>
+      </div>
+      <div class="container topic-grid">
+        <article class="card topic-card" id="security">
+          <div>
+            <p class="card__meta">Security</p>
+            <h3>Security</h3>
+            <p>Website records, certificates and email settings.</p>
+          </div>
+          <div class="topic-links">
+            <a href="/knowledge/dns.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15 15 0 0 1 0 20"/><path d="M12 2a15 15 0 0 0 0 20"/></svg>DNS</a>
+            <a href="/knowledge/ssl.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>SSL</a>
+            <a href="/knowledge/spf.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>SPF</a>
+            <a href="/knowledge/dkim.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 5 6v5c0 5 3 8 7 10 4-2 7-5 7-10V6l-7-3Z"/><path d="m9 12 2 2 4-4"/></svg>DKIM</a>
+            <a href="/knowledge/dmarc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3h8l4 4v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7l4-4Z"/><path d="m9 13 2 2 4-5"/></svg>DMARC</a>
+          </div>
+        </article>
+        <article class="card topic-card" id="quality">
+          <div>
+            <p class="card__meta">Quality</p>
+            <h3>Quality</h3>
+            <p>Speed, search visibility, accessibility and page experience.</p>
+          </div>
+          <div class="topic-links">
+            <a href="/knowledge/performance.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 14a8 8 0 1 1 16 0"/><path d="m12 14 4-5"/><path d="M4 18h16"/></svg>Performance</a>
+            <a href="/knowledge/seo.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>SEO</a>
+            <a href="/knowledge/accessibility.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="4" r="2"/><path d="M4 8h16"/><path d="M12 10v10"/><path d="m8 20 4-10 4 10"/></svg>Accessibility</a>
+          </div>
+        </article>
+        <article class="card topic-card" id="continuity">
+          <div>
+            <p class="card__meta">Continuity</p>
+            <h3>Continuity</h3>
+            <p>Guides for long-term website health and easier maintenance.</p>
+          </div>
+          <div class="topic-links">
+            <a href="/knowledge/browser-security.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 5 6v5c0 5 3 8 7 10 4-2 7-5 7-10V6l-7-3Z"/></svg>Browser Security</a>
+            <a href="/knowledge/digital-continuity.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="7" ry="3"/><path d="M5 5v14c0 1.7 3.1 3 7 3s7-1.3 7-3V5"/><path d="M5 12c0 1.7 3.1 3 7 3s7-1.3 7-3"/></svg>Digital Continuity</a>
+            <a href="/knowledge/cloudflare.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.5 19H7a5 5 0 1 1 1-9.9A6 6 0 0 1 19 11a4 4 0 0 1-1.5 8Z"/></svg>Cloudflare</a>
+          </div>
+        </article>
+      </div>
+    </section>
 
-    <ul>
-        <li>Security Headers</li>
-        <li>SSL Configuration</li>
-        <li>Performance & Lighthouse</li>
-        <li>Hosting & DNS</li>
-        <li>SEO Fundamentals</li>
-        <li>Domain Ownership</li>
-        <li>Continuity Risks</li>
-    </ul>
-</section>
+    <section class="section" aria-labelledby="cta-heading">
+      <div class="container section__header">
+        <div>
+          <p class="eyebrow">Second opinion</p>
+          <h2 id="cta-heading">Ready for a second opinion?</h2>
+        </div>
+        <div class="stack">
+          <p>Run a free Beacon review in under a minute.</p>
+          <a class="button button--primary" href="/scan.html">Run Free Website Review</a>
+        </div>
+      </div>
+    </section>
+  </main>
 
-<section>
-    <h3>Coming Soon</h3>
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div>
+        <strong>Beacon Audit</strong>
+        <p>A product of EVO Engineering</p>
+        <p>Clear.</p>
+        <p>Practical.</p>
+        <p>Plain English.</p>
+        <p class="footer-meta">&copy; 2026 EVO Engineering</p>
+      </div>
+      <div class="footer-links">
+        <a href="/index.html">Home</a>
+        <a href="/how-it-works.html">How It Works</a>
+        <a href="/scan.html">Free Scan</a>
+        <a href="/knowledge.html">Knowledge Center</a>
+        <a href="/contact.html">Contact</a>
+        <a href="/privacy.html">Privacy</a>
+        <a href="/terms.html">Terms</a>
+      </div>
+    </div>
+  </footer>
 
-    <p>
-        Automated website health scans and
-        continuity reports.
-    </p>
-</section>
-
-</main>
-
-<footer>
-    <p>Beacon Audit © 2026</p>
-</footer>
-
+  
+  <script src="/js/nav.js" defer></script>
+  
 </body>
 </html>
