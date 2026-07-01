@@ -3,6 +3,31 @@
   gap: 36px;
 }
 
+.hero--compact,
+.hero--compact .hero__content {
+  transition: min-height 220ms ease, padding 220ms ease;
+}
+
+.scan-is-running .hero--compact,
+.scan-has-report .hero--compact {
+  min-height: 42vh;
+}
+
+.scan-is-running .hero--compact .hero__content,
+.scan-has-report .hero--compact .hero__content {
+  padding-block: 58px 68px;
+}
+
+.scan-is-running .scan-experience,
+.scan-has-report .scan-experience {
+  gap: 30px;
+}
+
+.scan-is-running .scan-experience > .split,
+.scan-has-report .scan-experience > .split {
+  align-items: start;
+}
+
 .scan-panel.is-loading {
   border-color: rgba(216, 183, 92, 0.48);
   box-shadow: 0 18px 44px rgba(0, 0, 0, 0.28), 0 0 0 1px rgba(216, 183, 92, 0.06) inset;
@@ -61,6 +86,7 @@
   overflow: hidden;
   opacity: 1;
   transform: translateY(0);
+  animation: beacon-panel-enter 220ms ease both;
   transition: opacity 220ms ease, transform 220ms ease, padding 220ms ease, border-color 220ms ease;
 }
 
@@ -185,6 +211,7 @@
 }
 
 .scan-report {
+  display: grid;
   overflow: hidden;
 }
 
@@ -579,22 +606,59 @@
     grid-template-columns: 1fr;
   }
 
+  .scan-is-running .hero--compact,
+  .scan-has-report .hero--compact {
+    min-height: 34vh;
+  }
+
+  .scan-is-running .hero--compact .hero__content,
+  .scan-has-report .hero--compact .hero__content {
+    padding-block: 42px 50px;
+  }
+
+  .scan-has-report .section {
+    padding-top: 48px;
+  }
+
+  .scan-report__hero {
+    order: 1;
+  }
+
+  .scan-report__section--issues {
+    order: 2;
+  }
+
+  .scan-report__section--categories {
+    order: 3;
+  }
+
+  .scan-report__section--work-plan {
+    order: 4;
+  }
+
+  .scan-report__section--checked {
+    order: 5;
+  }
+
+  .scan-report__footer {
+    order: 6;
+  }
+
   .scan-report__facts {
     grid-template-columns: 1fr;
   }
 
   .category-grade-grid {
-    display: flex;
-    gap: 12px;
-    margin-inline: -16px;
-    overflow-x: auto;
-    padding: 0 16px 4px;
-    scroll-snap-type: x proximity;
+    grid-template-columns: 1fr;
   }
 
   .category-grade-card {
-    flex: 0 0 min(78vw, 260px);
-    scroll-snap-align: start;
+    min-height: 0;
+  }
+
+  .work-plan-grid,
+  .checked-grid {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -602,7 +666,15 @@
   .scan-progress,
   .scan-report__hero,
   .scan-report__section {
-    padding: 24px;
+    padding: 22px;
+  }
+
+  .scan-progress {
+    gap: 24px;
+  }
+
+  .scan-progress__steps {
+    gap: 10px;
   }
 
   .work-plan-grid,
@@ -611,7 +683,7 @@
   }
 
   .scan-report__grade-block {
-    padding: 24px;
+    padding: 22px;
   }
 
   .scan-report__grade {
@@ -622,6 +694,47 @@
   .scan-progress h2 {
     font-size: 2rem;
   }
+
+  .scan-report__summary {
+    gap: 14px;
+  }
+
+  .scan-report__facts div,
+  .category-grade-card,
+  .issue-card,
+  .work-card,
+  .checked-item {
+    padding: 18px;
+  }
+
+  .category-grade-card {
+    grid-template-columns: 52px minmax(0, 1fr);
+    gap: 14px;
+    align-items: start;
+    border-top: 0;
+    border-left: 3px solid var(--grade-color, rgba(216, 183, 92, 0.52));
+  }
+
+  .category-grade-card__top {
+    display: grid;
+    justify-content: start;
+  }
+
+  .category-grade-card__score {
+    font-size: 0.76rem;
+  }
+
+  .category-grade-card__grade {
+    font-size: 2rem;
+  }
+
+  .scan-report__section h3 {
+    font-size: 1.45rem;
+  }
+
+  .scan-report__footer {
+    padding: 22px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -629,6 +742,8 @@
   .scan-progress__steps li,
   .scan-progress__steps li.is-active .scan-progress__marker,
   .scan-progress,
+  .hero--compact,
+  .hero--compact .hero__content,
   .scan-panel {
     animation: none;
     transition: none;
@@ -636,6 +751,18 @@
 
   .scan-report--enter {
     transform: none;
+  }
+}
+
+@keyframes beacon-panel-enter {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 

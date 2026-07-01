@@ -61,6 +61,8 @@ if (scanForm && scanResult) {
     }
 
     scanForm.classList.add("is-loading");
+    document.body.classList.remove("scan-has-report");
+    document.body.classList.add("scan-is-running");
     scanResult.classList.add("is-active");
     scanResult.innerHTML = renderProgress(domain);
 
@@ -85,12 +87,15 @@ if (scanForm && scanResult) {
       await progress.complete();
       await collapseProgress();
       scanResult.innerHTML = renderScanReport(payload);
+      document.body.classList.remove("scan-is-running");
+      document.body.classList.add("scan-has-report");
       requestAnimationFrame(() => {
         const report = scanResult.querySelector("[data-report]");
         if (report) report.classList.add("is-visible");
       });
     } catch (error) {
       progress.stop();
+      document.body.classList.remove("scan-is-running");
       showNotice("The website review service is not reachable right now. Please try again shortly.", "error");
     } finally {
       scanForm.classList.remove("is-loading");
@@ -231,7 +236,7 @@ function renderScanReport(report) {
         </div>
       </header>
 
-      <section class="scan-report__section" aria-labelledby="category-grades-heading">
+      <section class="scan-report__section scan-report__section--categories" aria-labelledby="category-grades-heading">
         <div class="scan-report__section-header">
           <div>
             <p class="eyebrow">Category Grades</p>
@@ -243,7 +248,7 @@ function renderScanReport(report) {
         </div>
       </section>
 
-      <section class="scan-report__section" aria-labelledby="fix-first-heading">
+      <section class="scan-report__section scan-report__section--issues" aria-labelledby="fix-first-heading">
         <div class="scan-report__section-header">
           <div>
             <p class="eyebrow">Fix First</p>
@@ -255,7 +260,7 @@ function renderScanReport(report) {
         </div>
       </section>
 
-      <section class="scan-report__section" aria-labelledby="work-plan-heading">
+      <section class="scan-report__section scan-report__section--work-plan" aria-labelledby="work-plan-heading">
         <div class="scan-report__section-header">
           <div>
             <p class="eyebrow">Recommended Work Plan</p>
@@ -372,6 +377,8 @@ function renderEmptyCard(title, message) {
 }
 
 function showNotice(message, tone = "default") {
+  document.body.classList.remove("scan-is-running");
+  document.body.classList.remove("scan-has-report");
   scanResult.classList.add("is-active");
   scanResult.innerHTML = `
     <div class="scan-notice scan-notice--${escapeHtml(tone)}">
