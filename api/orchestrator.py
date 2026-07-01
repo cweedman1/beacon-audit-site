@@ -49,8 +49,12 @@ class AuditEngine:
         results = [self._normalize_result(result) for result in results]
         findings: list[Finding] = [finding for result in results for finding in result.findings]
         lighthouse_status = self._lighthouse_status(results)
+        scoring_started = perf_counter()
         scores = self.scorer.score_results(findings, results)
+        scoring_elapsed_ms = round((perf_counter() - scoring_started) * 1000)
+        opportunities_started = perf_counter()
         opportunities = self.opportunities.generate(findings)
+        opportunities_elapsed_ms = round((perf_counter() - opportunities_started) * 1000)
         technology_status = self._technology_status(normalized_url)
         scan_finished_at = datetime.now(UTC)
         elapsed_ms = round((perf_counter() - start) * 1000)
@@ -65,6 +69,10 @@ class AuditEngine:
             "scanner_statuses": [self._scanner_status_payload(result) for result in results],
             "subsystems": self._subsystems(results, technology_status, elapsed_ms),
             "timing": self._timing(results, technology_status, elapsed_ms),
+            "debug_stage_timings": {
+                "scoring_time_ms": scoring_elapsed_ms,
+                "opportunity_builder_time_ms": opportunities_elapsed_ms,
+            },
             "capability_matrix": capability_matrix(audit_type),
             "report_sections": section_contract(audit_type),
         }

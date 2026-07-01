@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import platform
+import os
 
 from fastapi import APIRouter, HTTPException, Request
 
+from api.debug import debug_enabled
 from api.rate_limit import InMemoryRateLimiter, RateLimitExceeded
 from api.schemas import FreeScanRequest, FreeScanResponse, HealthResponse, RootResponse
 from api.service import PublicAPIServiceError, QuickScanService
@@ -41,11 +43,11 @@ def health() -> HealthResponse:
     )
 
 
-@router.post("/v1/free-scan", response_model=FreeScanResponse)
+@router.post("/v1/free-scan", response_model=FreeScanResponse, response_model_exclude_none=True)
 def free_scan(payload: FreeScanRequest, request: Request) -> FreeScanResponse:
     try:
         rate_limiter.check(_client_key(request))
-        return service.scan(payload.url)
+        return service.scan(payload.url, debug=debug_enabled(request.query_params.get("debug"), env_value=os.environ.get("BEACON_DEBUG")))
     except RateLimitExceeded as exc:
         raise HTTPException(status_code=429, detail={"error": "rate_limited", "message": str(exc), "status_code": 429}) from exc
     except PublicAPIServiceError as exc:
@@ -68,4 +70,3 @@ def _node_version(value: str | None) -> str:
     if normalized.startswith("v22") or normalized.startswith("22"):
         return "22"
     return normalized
-

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Any
+
 from pydantic import BaseModel, Field
 
 
@@ -44,6 +46,7 @@ class FreeScanResponse(BaseModel):
     top_issues: list[IssueSummary]
     recommended_fixes: list[RecommendedFix]
     estimated_effort: str
+    debug: dict[str, Any] | None = None
 
 
 class HealthResponse(BaseModel):
@@ -67,4 +70,3 @@ class ErrorResponse(BaseModel):
     error: str
     message: str
     status_code: int
-
