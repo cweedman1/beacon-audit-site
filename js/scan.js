@@ -7,7 +7,7 @@ const scanSteps = [
   { label: "Resolving domain", detail: "Reviewing public domain records." },
   { label: "Verifying HTTPS", detail: "Confirming certificate and secure connection signals." },
   { label: "Reviewing Security Headers", detail: "Looking at browser-facing protection settings." },
-  { label: "Running Google PageSpeed Insights", detail: "Reading public page experience signals." },
+  { label: "Analyzing website performance", detail: "Reading public page experience signals." },
   { label: "Detecting technologies", detail: "Looking for platform and infrastructure clues." },
   { label: "Building recommendations", detail: "Prioritizing the work in plain English." },
   { label: "Finalizing report", detail: "Assembling the customer-ready report." },
