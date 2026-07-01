@@ -59,6 +59,15 @@
   align-items: start;
   padding: 34px;
   overflow: hidden;
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 220ms ease, transform 220ms ease, padding 220ms ease, border-color 220ms ease;
+}
+
+.scan-progress.is-collapsing {
+  border-color: rgba(48, 57, 70, 0.25);
+  opacity: 0;
+  transform: translateY(-8px);
 }
 
 .scan-progress h2 {
@@ -85,6 +94,7 @@
   background: rgba(255, 255, 255, 0.035);
   padding: 14px;
   color: var(--soft);
+  opacity: 0.52;
   transition: background 200ms ease, border-color 200ms ease, color 200ms ease, transform 200ms ease;
 }
 
@@ -92,12 +102,14 @@
   border-color: rgba(216, 183, 92, 0.52);
   background: rgba(216, 183, 92, 0.075);
   color: var(--text);
+  opacity: 1;
   transform: translateY(-1px);
 }
 
 .scan-progress__steps li.is-complete {
   border-color: rgba(57, 217, 138, 0.28);
   color: var(--muted);
+  opacity: 1;
 }
 
 .scan-progress__steps strong {
@@ -124,14 +136,41 @@
   background: rgba(16, 20, 24, 0.7);
 }
 
+.scan-progress__check {
+  display: none;
+}
+
+.scan-progress__dot {
+  display: block;
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: currentColor;
+  opacity: 0.38;
+}
+
 .scan-progress__steps li.is-active .scan-progress__marker {
   border-color: rgba(216, 183, 92, 0.64);
   color: var(--gold);
+  box-shadow: 0 0 0 0 rgba(216, 183, 92, 0.18);
+  animation: beacon-scan-pulse 1400ms ease-in-out infinite;
 }
 
 .scan-progress__steps li.is-complete .scan-progress__marker {
   border-color: rgba(57, 217, 138, 0.42);
   color: var(--success);
+}
+
+.scan-progress__steps li.is-complete .scan-progress__check {
+  display: block;
+}
+
+.scan-progress__steps li.is-complete .scan-progress__dot {
+  display: none;
+}
+
+.scan-progress__steps li.is-active .scan-progress__dot {
+  opacity: 1;
 }
 
 .scan-progress svg,
@@ -212,6 +251,17 @@
 .scan-report__summary > p {
   max-width: 78ch;
   font-size: 1.08rem;
+}
+
+.scan-report__duration {
+  width: fit-content;
+  border: 1px solid rgba(48, 57, 70, 0.82);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.035);
+  color: var(--soft);
+  font-size: 0.92rem;
+  font-weight: 720;
+  padding: 8px 11px;
 }
 
 .scan-report__kicker {
@@ -577,11 +627,28 @@
 @media (prefers-reduced-motion: reduce) {
   .scan-report--enter,
   .scan-progress__steps li,
+  .scan-progress__steps li.is-active .scan-progress__marker,
+  .scan-progress,
   .scan-panel {
+    animation: none;
     transition: none;
   }
 
   .scan-report--enter {
     transform: none;
+  }
+}
+
+@keyframes beacon-scan-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(216, 183, 92, 0.18);
+  }
+
+  70% {
+    box-shadow: 0 0 0 8px rgba(216, 183, 92, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(216, 183, 92, 0);
   }
 }

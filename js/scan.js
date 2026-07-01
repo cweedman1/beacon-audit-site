@@ -3,12 +3,18 @@ const scanResult = document.querySelector("[data-scan-result]");
 const beaconApiBase = String(window.BEACON_API_URL || "").replace(/\/$/, "");
 
 const scanSteps = [
-  { label: "Checking DNS", detail: "Reviewing public domain records." },
-  { label: "Checking HTTPS", detail: "Confirming certificate and secure connection signals." },
+  { label: "Preparing scan", detail: "Normalizing the domain and starting the review." },
+  { label: "Resolving domain", detail: "Reviewing public domain records." },
+  { label: "Verifying HTTPS", detail: "Confirming certificate and secure connection signals." },
   { label: "Reviewing Security Headers", detail: "Looking at browser-facing protection settings." },
-  { label: "Measuring Performance", detail: "Reading public page experience signals." },
-  { label: "Preparing Recommendations", detail: "Prioritizing the work in plain English." }
+  { label: "Running Google PageSpeed Insights", detail: "Reading public page experience signals." },
+  { label: "Detecting technologies", detail: "Looking for platform and infrastructure clues." },
+  { label: "Building recommendations", detail: "Prioritizing the work in plain English." },
+  { label: "Finalizing report", detail: "Assembling the customer-ready report." },
+  { label: "Report ready", detail: "Beacon has completed the review." }
 ];
+
+const holdStageIndex = 4;
 
 const categoryLabels = {
   security: "Security",
@@ -51,14 +57,15 @@ if (scanForm && scanResult) {
 
     if (submitButton) {
       submitButton.disabled = true;
-      submitButton.textContent = "Reviewing website...";
+      submitButton.textContent = "Reviewing Website...";
     }
 
     scanForm.classList.add("is-loading");
     scanResult.classList.add("is-active");
     scanResult.innerHTML = renderProgress(domain);
 
-    const progress = advanceProgress();
+    const progress = createProgressController();
+    progress.start();
 
     try {
       const response = await fetch(`${beaconApiBase}/v1/free-scan`, {
@@ -69,20 +76,21 @@ if (scanForm && scanResult) {
       const payload = await response.json();
 
       if (!response.ok) {
-        await progress;
+        progress.stop();
         const message = payload?.detail?.message || payload?.message || "The website review could not be completed.";
         showNotice(message, "error");
         return;
       }
 
-      await progress;
+      await progress.complete();
+      await collapseProgress();
       scanResult.innerHTML = renderScanReport(payload);
       requestAnimationFrame(() => {
         const report = scanResult.querySelector("[data-report]");
         if (report) report.classList.add("is-visible");
       });
     } catch (error) {
-      await progress;
+      progress.stop();
       showNotice("The website review service is not reachable right now. Please try again shortly.", "error");
     } finally {
       scanForm.classList.remove("is-loading");
@@ -105,7 +113,10 @@ function renderProgress(domain) {
       <ol class="scan-progress__steps">
         ${scanSteps.map((step, index) => `
           <li data-scan-step="${index}">
-            <span class="scan-progress__marker" aria-hidden="true">${icon("check")}</span>
+            <span class="scan-progress__marker" aria-hidden="true">
+              <span class="scan-progress__check">${icon("check")}</span>
+              <span class="scan-progress__dot"></span>
+            </span>
             <span>
               <strong>${step.label}</strong>
               <small>${step.detail}</small>
@@ -117,17 +128,65 @@ function renderProgress(domain) {
   `;
 }
 
-async function advanceProgress() {
-  for (let index = 0; index < scanSteps.length; index += 1) {
+function createProgressController() {
+  let currentIndex = 0;
+  let timer = null;
+  let stopped = false;
+
+  function setActive(index) {
+    scanResult.querySelectorAll("[data-scan-step]").forEach((step) => {
+      step.classList.remove("is-active");
+    });
+
     const current = scanResult.querySelector(`[data-scan-step="${index}"]`);
     if (current) current.classList.add("is-active");
-    await wait(360);
+    currentIndex = index;
+  }
+
+  function completeStep(index) {
+    const current = scanResult.querySelector(`[data-scan-step="${index}"]`);
     if (current) {
       current.classList.remove("is-active");
       current.classList.add("is-complete");
     }
   }
-  await wait(180);
+
+  function scheduleNext() {
+    if (stopped || currentIndex >= holdStageIndex) return;
+    timer = window.setTimeout(() => {
+      if (stopped) return;
+      completeStep(currentIndex);
+      setActive(currentIndex + 1);
+      scheduleNext();
+    }, 520);
+  }
+
+  return {
+    start() {
+      setActive(0);
+      scheduleNext();
+    },
+    stop() {
+      stopped = true;
+      if (timer) window.clearTimeout(timer);
+    },
+    async complete() {
+      this.stop();
+
+      for (let index = currentIndex; index < scanSteps.length; index += 1) {
+        setActive(index);
+        await wait(index === scanSteps.length - 1 ? 300 : 180);
+        completeStep(index);
+      }
+    }
+  };
+}
+
+async function collapseProgress() {
+  const panel = scanResult.querySelector(".scan-progress");
+  if (!panel) return;
+  panel.classList.add("is-collapsing");
+  await wait(220);
 }
 
 function renderScanReport(report) {
@@ -136,6 +195,7 @@ function renderScanReport(report) {
   const status = report?.overall?.status || "Review completed";
   const summary = report?.summary || report?.overall?.summary || "Beacon completed the public website review.";
   const effort = report?.estimated_effort || "Review recommended";
+  const completedIn = formatElapsed(report);
   const categories = report?.categories && typeof report.categories === "object" ? report.categories : {};
   const issues = Array.isArray(report?.top_issues) ? report.top_issues.slice(0, 3) : [];
   const fixes = Array.isArray(report?.recommended_fixes) ? report.recommended_fixes.slice(0, 6) : [];
@@ -157,6 +217,7 @@ function renderScanReport(report) {
           </div>
           <h2>Website health report</h2>
           <p>${escapeHtml(summary)}</p>
+          ${completedIn ? `<p class="scan-report__duration">Review completed in ${escapeHtml(completedIn)}</p>` : ""}
           <dl class="scan-report__facts">
             <div>
               <dt>Fix first</dt>
@@ -344,6 +405,12 @@ function gradeFromScore(score) {
   if (score >= 70) return "C-";
   if (score >= 60) return "D";
   return "F";
+}
+
+function formatElapsed(report) {
+  const elapsedMs = Number(report?.elapsed_ms ?? report?.debug?.elapsed_ms ?? report?.debug?.timing?.scan_elapsed_ms);
+  if (!Number.isFinite(elapsedMs)) return "";
+  return `${(elapsedMs / 1000).toFixed(1)} seconds`;
 }
 
 function toneForGrade(grade) {
