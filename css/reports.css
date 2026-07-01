@@ -601,6 +601,15 @@
 }
 
 @media (max-width: 860px) {
+  .scan-report,
+  .scan-report * {
+    min-width: 0;
+  }
+
+  .scan-report {
+    overflow-wrap: anywhere;
+  }
+
   .scan-progress,
   .scan-report__hero {
     grid-template-columns: 1fr;
@@ -648,6 +657,10 @@
     grid-template-columns: 1fr;
   }
 
+  .scan-report__section-header {
+    display: block;
+  }
+
   .category-grade-grid {
     grid-template-columns: 1fr;
   }
@@ -663,6 +676,19 @@
 }
 
 @media (max-width: 640px) {
+  .scan-has-report .scan-output,
+  .scan-is-running .scan-output {
+    margin-inline: -16px;
+  }
+
+  .scan-has-report .scan-report,
+  .scan-is-running .scan-progress,
+  .scan-notice {
+    border-right: 0;
+    border-left: 0;
+    border-radius: 0;
+  }
+
   .scan-progress,
   .scan-report__hero,
   .scan-report__section {
@@ -699,12 +725,34 @@
     gap: 14px;
   }
 
+  .scan-report__summary > p {
+    font-size: 1rem;
+    line-height: 1.62;
+  }
+
+  .scan-report__kicker {
+    width: 100%;
+    align-items: flex-start;
+    border-radius: 14px;
+  }
+
   .scan-report__facts div,
   .category-grade-card,
   .issue-card,
   .work-card,
   .checked-item {
     padding: 18px;
+  }
+
+  .scan-report__facts {
+    gap: 10px;
+  }
+
+  .scan-report__facts dd,
+  .issue-card p,
+  .work-card p,
+  .checked-item p {
+    line-height: 1.58;
   }
 
   .category-grade-card {
@@ -734,6 +782,106 @@
 
   .scan-report__footer {
     padding: 22px;
+  }
+}
+
+@media (max-width: 414px) {
+  .scan-progress,
+  .scan-report__hero,
+  .scan-report__section {
+    padding: 20px;
+  }
+
+  .scan-report__grade-block {
+    padding: 20px;
+  }
+
+  .scan-report__status {
+    font-size: 1rem;
+  }
+
+  .scan-report__section {
+    gap: 16px;
+  }
+}
+
+@media (max-width: 390px) {
+  .scan-report__grade {
+    font-size: clamp(3.85rem, 23vw, 4.25rem);
+  }
+
+  .scan-report__summary h2,
+  .scan-progress h2 {
+    font-size: 1.8rem;
+  }
+
+  .scan-report__section h3 {
+    font-size: 1.36rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .scan-progress,
+  .scan-report__hero,
+  .scan-report__section {
+    padding: 18px;
+  }
+
+  .scan-progress__steps li {
+    grid-template-columns: 30px minmax(0, 1fr);
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .scan-progress__marker,
+  .checked-item > span {
+    width: 28px;
+    height: 28px;
+  }
+
+  .scan-progress svg,
+  .scan-report svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .scan-report__facts div,
+  .category-grade-card,
+  .issue-card,
+  .work-card,
+  .checked-item {
+    padding: 16px;
+  }
+
+  .category-grade-card {
+    grid-template-columns: 46px minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .category-grade-card__icon {
+    width: 34px;
+    height: 34px;
+  }
+
+  .issue-card__detail strong {
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 320px) {
+  .scan-report__grade {
+    font-size: 3.6rem;
+  }
+
+  .scan-report__summary h2,
+  .scan-progress h2 {
+    font-size: 1.55rem;
+  }
+
+  .severity-pill,
+  .scan-report__facts dt,
+  .card__meta {
+    letter-spacing: 0.06em;
   }
 }
 
