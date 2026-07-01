@@ -1,0 +1,587 @@
+.scan-experience {
+  display: grid;
+  gap: 36px;
+}
+
+.scan-panel.is-loading {
+  border-color: rgba(216, 183, 92, 0.48);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.28), 0 0 0 1px rgba(216, 183, 92, 0.06) inset;
+}
+
+.button:disabled {
+  cursor: wait;
+  opacity: 0.72;
+  transform: none;
+}
+
+.scan-output {
+  display: none;
+}
+
+.scan-output.is-active {
+  display: block;
+}
+
+.scan-output > p {
+  margin: 0;
+  color: var(--soft);
+}
+
+.scan-notice,
+.scan-progress,
+.scan-report {
+  border: 1px solid rgba(48, 57, 70, 0.9);
+  border-radius: var(--radius);
+  background:
+    linear-gradient(180deg, rgba(28, 34, 42, 0.96), rgba(13, 17, 22, 0.98)),
+    var(--panel);
+  box-shadow: var(--shadow-soft);
+}
+
+.scan-notice {
+  padding: 24px;
+}
+
+.scan-notice strong {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--text);
+}
+
+.scan-notice--error {
+  border-color: rgba(255, 111, 89, 0.36);
+}
+
+.scan-progress {
+  display: grid;
+  grid-template-columns: minmax(0, 0.68fr) minmax(320px, 0.82fr);
+  gap: 36px;
+  align-items: start;
+  padding: 34px;
+  overflow: hidden;
+}
+
+.scan-progress h2 {
+  max-width: none;
+  margin-bottom: 14px;
+  font-size: clamp(2rem, 5vw, 3.4rem);
+}
+
+.scan-progress__steps {
+  display: grid;
+  gap: 12px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.scan-progress__steps li {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+  border: 1px solid rgba(48, 57, 70, 0.82);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.035);
+  padding: 14px;
+  color: var(--soft);
+  transition: background 200ms ease, border-color 200ms ease, color 200ms ease, transform 200ms ease;
+}
+
+.scan-progress__steps li.is-active {
+  border-color: rgba(216, 183, 92, 0.52);
+  background: rgba(216, 183, 92, 0.075);
+  color: var(--text);
+  transform: translateY(-1px);
+}
+
+.scan-progress__steps li.is-complete {
+  border-color: rgba(57, 217, 138, 0.28);
+  color: var(--muted);
+}
+
+.scan-progress__steps strong {
+  display: block;
+  color: var(--text);
+  font-size: 0.98rem;
+}
+
+.scan-progress__steps small {
+  display: block;
+  margin-top: 2px;
+  color: var(--soft);
+  line-height: 1.45;
+}
+
+.scan-progress__marker {
+  display: inline-grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border: 1px solid rgba(48, 57, 70, 0.95);
+  border-radius: 10px;
+  color: var(--soft);
+  background: rgba(16, 20, 24, 0.7);
+}
+
+.scan-progress__steps li.is-active .scan-progress__marker {
+  border-color: rgba(216, 183, 92, 0.64);
+  color: var(--gold);
+}
+
+.scan-progress__steps li.is-complete .scan-progress__marker {
+  border-color: rgba(57, 217, 138, 0.42);
+  color: var(--success);
+}
+
+.scan-progress svg,
+.scan-report svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
+.scan-report {
+  overflow: hidden;
+}
+
+.scan-report--enter {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 220ms ease, transform 220ms ease;
+}
+
+.scan-report--enter.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.scan-report__hero {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.34fr) minmax(0, 1fr);
+  gap: 32px;
+  align-items: stretch;
+  border-bottom: 1px solid rgba(48, 57, 70, 0.82);
+  background:
+    radial-gradient(circle at 12% 0%, rgba(216, 183, 92, 0.11), transparent 28rem),
+    rgba(255, 255, 255, 0.02);
+  padding: 34px;
+}
+
+.scan-report__grade-block {
+  display: grid;
+  align-content: center;
+  justify-items: start;
+  border: 1px solid rgba(48, 57, 70, 0.78);
+  border-radius: var(--radius);
+  background: rgba(16, 20, 24, 0.72);
+  padding: 28px;
+}
+
+.scan-report__grade {
+  color: var(--grade-color, var(--gold));
+  font-size: clamp(4.5rem, 15vw, 8rem);
+  font-weight: 860;
+  line-height: 0.86;
+  letter-spacing: 0;
+}
+
+.scan-report__status {
+  margin-top: 18px;
+  color: var(--text);
+  font-size: 1.1rem;
+  font-weight: 760;
+}
+
+.scan-report__summary {
+  display: grid;
+  align-content: center;
+  gap: 18px;
+}
+
+.scan-report__summary h2 {
+  max-width: none;
+  margin: 0;
+  font-size: clamp(2rem, 5vw, 3.7rem);
+}
+
+.scan-report__summary > p {
+  max-width: 78ch;
+  font-size: 1.08rem;
+}
+
+.scan-report__kicker {
+  display: inline-flex;
+  width: fit-content;
+  max-width: 100%;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid rgba(216, 183, 92, 0.26);
+  border-radius: 999px;
+  background: rgba(216, 183, 92, 0.065);
+  color: var(--gold);
+  font-weight: 760;
+  padding: 8px 12px;
+}
+
+.scan-report__facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin: 8px 0 0;
+}
+
+.scan-report__facts div {
+  border: 1px solid rgba(48, 57, 70, 0.82);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.035);
+  padding: 16px;
+}
+
+.scan-report__facts dt {
+  color: var(--soft);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.scan-report__facts dd {
+  margin: 6px 0 0;
+  color: var(--text);
+  font-weight: 720;
+  line-height: 1.35;
+}
+
+.scan-report__section {
+  display: grid;
+  gap: 18px;
+  padding: 34px;
+  border-bottom: 1px solid rgba(48, 57, 70, 0.72);
+}
+
+.scan-report__section:last-of-type {
+  border-bottom: 0;
+}
+
+.scan-report__section-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.scan-report__section h3 {
+  margin: 0;
+  font-size: clamp(1.55rem, 3vw, 2.2rem);
+}
+
+.category-grade-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.category-grade-card,
+.issue-card,
+.work-card,
+.checked-item,
+.empty-report-card {
+  border: 1px solid rgba(48, 57, 70, 0.82);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.category-grade-card {
+  display: grid;
+  gap: 18px;
+  min-height: 210px;
+  padding: 18px;
+  border-top: 3px solid var(--grade-color, rgba(216, 183, 92, 0.52));
+}
+
+.category-grade-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.category-grade-card__icon {
+  display: inline-grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border: 1px solid rgba(216, 183, 92, 0.26);
+  border-radius: 10px;
+  color: var(--grade-color, var(--gold));
+  background: rgba(216, 183, 92, 0.055);
+}
+
+.category-grade-card__score {
+  color: var(--soft);
+  font-size: 0.82rem;
+  font-weight: 760;
+}
+
+.category-grade-card__grade {
+  color: var(--grade-color, var(--gold));
+  font-size: 2.35rem;
+  font-weight: 850;
+  line-height: 1;
+}
+
+.category-grade-card p {
+  margin: 8px 0 0;
+  color: var(--text);
+  font-weight: 720;
+}
+
+.category-grade-card small {
+  display: block;
+  margin-top: 8px;
+  color: var(--soft);
+  line-height: 1.45;
+}
+
+.issue-list,
+.work-plan-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.issue-card {
+  display: grid;
+  gap: 16px;
+  border-left: 3px solid var(--severity-color, var(--gold));
+  padding: 22px;
+}
+
+.issue-card__heading {
+  display: grid;
+  gap: 10px;
+}
+
+.issue-card h4,
+.work-card h4 {
+  margin: 0;
+  color: var(--text);
+  font-size: 1.18rem;
+  line-height: 1.25;
+}
+
+.issue-card__detail {
+  display: grid;
+  gap: 4px;
+}
+
+.issue-card__detail strong {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text);
+}
+
+.issue-card__detail svg {
+  color: var(--severity-color, var(--gold));
+}
+
+.work-plan-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.work-card {
+  display: grid;
+  gap: 14px;
+  align-content: start;
+  border-top: 3px solid var(--severity-color, var(--gold));
+  padding: 20px;
+}
+
+.work-card__top {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.work-card__effort {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--soft);
+  font-size: 0.88rem;
+  font-weight: 720;
+}
+
+.severity-pill {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  border: 1px solid color-mix(in srgb, var(--severity-color, var(--gold)) 48%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--severity-color, var(--gold)) 12%, transparent);
+  color: var(--severity-color, var(--gold));
+  font-size: 0.75rem;
+  font-weight: 820;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  padding: 7px 9px;
+  text-transform: uppercase;
+}
+
+.checked-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.checked-item {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr);
+  gap: 12px;
+  padding: 18px;
+}
+
+.checked-item > span {
+  display: inline-grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border: 1px solid rgba(57, 217, 138, 0.28);
+  border-radius: 10px;
+  color: var(--success);
+  background: rgba(57, 217, 138, 0.055);
+}
+
+.checked-item strong {
+  display: block;
+  color: var(--text);
+  line-height: 1.25;
+}
+
+.checked-item p {
+  margin-top: 4px;
+  font-size: 0.94rem;
+}
+
+.empty-report-card {
+  padding: 20px;
+}
+
+.empty-report-card strong {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--text);
+}
+
+.scan-report__footer {
+  border-top: 1px solid rgba(48, 57, 70, 0.72);
+  background: rgba(16, 20, 24, 0.5);
+  padding: 24px 34px;
+}
+
+.scan-report__footer p {
+  max-width: 80ch;
+  font-size: 0.98rem;
+}
+
+.tone-excellent {
+  --grade-color: var(--success);
+  --severity-color: var(--success);
+}
+
+.tone-good {
+  --grade-color: var(--blue);
+  --severity-color: var(--blue);
+}
+
+.tone-fair {
+  --grade-color: var(--gold);
+  --severity-color: var(--gold);
+}
+
+.tone-poor {
+  --grade-color: #ff6f59;
+  --severity-color: #ff6f59;
+}
+
+.tone-neutral {
+  --grade-color: var(--soft);
+  --severity-color: var(--soft);
+}
+
+@media (max-width: 980px) {
+  .category-grade-grid,
+  .work-plan-grid,
+  .checked-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 860px) {
+  .scan-progress,
+  .scan-report__hero {
+    grid-template-columns: 1fr;
+  }
+
+  .scan-report__facts {
+    grid-template-columns: 1fr;
+  }
+
+  .category-grade-grid {
+    display: flex;
+    gap: 12px;
+    margin-inline: -16px;
+    overflow-x: auto;
+    padding: 0 16px 4px;
+    scroll-snap-type: x proximity;
+  }
+
+  .category-grade-card {
+    flex: 0 0 min(78vw, 260px);
+    scroll-snap-align: start;
+  }
+}
+
+@media (max-width: 640px) {
+  .scan-progress,
+  .scan-report__hero,
+  .scan-report__section {
+    padding: 24px;
+  }
+
+  .work-plan-grid,
+  .checked-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .scan-report__grade-block {
+    padding: 24px;
+  }
+
+  .scan-report__grade {
+    font-size: 4.5rem;
+  }
+
+  .scan-report__summary h2,
+  .scan-progress h2 {
+    font-size: 2rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scan-report--enter,
+  .scan-progress__steps li,
+  .scan-panel {
+    transition: none;
+  }
+
+  .scan-report--enter {
+    transform: none;
+  }
+}
