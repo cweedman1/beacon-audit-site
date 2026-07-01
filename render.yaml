@@ -15,5 +15,7 @@ services:
         value: "60"
       - key: PUBLIC_RATE_LIMIT_PER_MINUTE
         value: "10"
+      - key: PAGESPEED_API_KEY
+        sync: false
       - key: CHROME_PATH
         value: /usr/bin/chromium

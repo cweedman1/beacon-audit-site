@@ -135,22 +135,9 @@ class LighthouseScanner(Scanner):
             "retry_result_used": False,
             "requested_url": None,
             "final_url": None,
-            "redirect_chain": [],
             "fetch_time": None,
-            "config_settings": {},
-            "screen_emulation": {},
-            "user_agent": None,
-            "cpu_throttling": {},
-            "network_throttling": {},
-            "storage_reset": {},
             "run_warnings": [],
             "environment": {},
-            "lighthouse_metrics": {},
-            "performance_audit_refs": [],
-            "lighthouse_flags": [],
-            "chrome_flags": [],
-            "command_parts": [],
-            "retry_flag_changes": [],
         }
         runtime = None
         command = self._command()
@@ -197,8 +184,6 @@ class LighthouseScanner(Scanner):
         cleanup_deferred = False
         cleanup_scheduled = False
         report: dict[str, object] | None = None
-        cleanup_started = perf_counter()
-        cleanup_time_ms: int | None = None
         try:
             output_path = Path(temp_dir) / "lighthouse.json"
             completed: subprocess.CompletedProcess[str] | None = None
@@ -218,10 +203,6 @@ class LighthouseScanner(Scanner):
                 profile_dir.mkdir(parents=True, exist_ok=True)
                 full_command = self._full_command(command, target_url, output_path, profile_dir, chrome_path, retry_mode=attempt > 1)
                 status["command"] = " ".join(full_command)
-                status["command_parts"] = full_command
-                status["lighthouse_flags"] = self._lighthouse_flags(full_command)
-                status["chrome_flags"] = self._chrome_flags(full_command)
-                status["retry_flag_changes"] = self._retry_flag_changes(attempt > 1)
                 status["profile_dir"] = str(profile_dir)
                 attempt_started = perf_counter()
                 try:
@@ -253,10 +234,6 @@ class LighthouseScanner(Scanner):
                         "json_parsed_after_timeout": parsed_after_timeout is not None,
                         "retry_mode": attempt > 1,
                         "command": " ".join(full_command),
-                        "command_parts": full_command,
-                        "lighthouse_flags": self._lighthouse_flags(full_command),
-                        "chrome_flags": self._chrome_flags(full_command),
-                        "flag_changes_from_initial": self._retry_flag_changes(attempt > 1),
                     }
                     status["attempts"].append(attempt_status)  # type: ignore[union-attr]
                     status["timed_out"] = True
@@ -322,10 +299,6 @@ class LighthouseScanner(Scanner):
                     "timeout_seconds": attempt_timeout,
                     "retry_mode": attempt > 1,
                     "command": " ".join(full_command),
-                    "command_parts": full_command,
-                    "lighthouse_flags": self._lighthouse_flags(full_command),
-                    "chrome_flags": self._chrome_flags(full_command),
-                    "flag_changes_from_initial": self._retry_flag_changes(attempt > 1),
                 }
                 status["attempts"].append(attempt_status)  # type: ignore[union-attr]
                 status["timeline"]["json_written"] = json_report_written  # type: ignore[index]
@@ -413,8 +386,7 @@ class LighthouseScanner(Scanner):
                         status["cleanup_deferred"] = True
                         status["cleanup_scheduled"] = cleanup_scheduled
                         status["cleanup_path"] = temp_dir
-            cleanup_time_ms = round((perf_counter() - cleanup_started) * 1000)
-            status["cleanup_time_ms"] = cleanup_time_ms
+            status["cleanup_time_ms"] = round((perf_counter() - cleanup_started) * 1000)
             if isinstance(status.get("timeline"), dict):
                 status["timeline"]["cleanup"] = "Completed"  # type: ignore[index]
 
@@ -530,21 +502,10 @@ class LighthouseScanner(Scanner):
             "requested_url": target_url,
             "final_url": None,
             "fetch_time": None,
-            "config_settings": {},
-            "screen_emulation": {},
-            "user_agent": None,
-            "cpu_throttling": {},
-            "network_throttling": {},
-            "storage_reset": {},
             "run_warnings": [],
             "environment": {},
-            "lighthouse_metrics": {},
-            "performance_audit_refs": [],
             "attempts": [],
             "command": "Google PageSpeed Insights API",
-            "command_parts": ["google_pagespeed", "mobile", "performance", "accessibility", "best-practices", "seo"],
-            "lighthouse_flags": [],
-            "chrome_flags": [],
             "retry_count": 0,
             "retry_result_used": False,
             "accepted_attempt": 1,
@@ -809,151 +770,12 @@ class LighthouseScanner(Scanner):
             lighthouse_flags.extend(["--disable-storage-reset", "--throttling-method=provided"])
         return lighthouse_flags
 
-    def _lighthouse_flags(self, command: list[str]) -> list[str]:
-        return [part for part in command if part.startswith("--")]
-
-    def _chrome_flags(self, command: list[str]) -> list[str]:
-        for part in command:
-            if part.startswith("--chrome-flags="):
-                return part.removeprefix("--chrome-flags=").split()
-        return []
-
-    def _retry_flag_changes(self, retry_mode: bool) -> list[dict[str, str]]:
-        if not retry_mode:
-            return []
-        return [
-            {
-                "flag": "--disable-storage-reset",
-                "initial": "absent",
-                "retry": "present",
-                "performance_impact_risk": "Medium",
-                "reason": "Changes page storage/cache reset behavior between attempts.",
-            },
-            {
-                "flag": "--throttling-method=provided",
-                "initial": "Lighthouse default simulated throttling",
-                "retry": "Provided runtime throttling",
-                "performance_impact_risk": "High",
-                "reason": "Makes the score depend more directly on the container CPU/network environment instead of Lighthouse simulated mobile throttling.",
-            },
-        ]
-
     def _attach_report_debug(self, status: dict[str, object], report: dict[str, object]) -> None:
         status["requested_url"] = report.get("requestedUrl")
         status["final_url"] = report.get("finalUrl")
         status["fetch_time"] = report.get("fetchTime")
         status["run_warnings"] = report.get("runWarnings") if isinstance(report.get("runWarnings"), list) else []
         status["environment"] = report.get("environment") if isinstance(report.get("environment"), dict) else {}
-
-        config_settings = report.get("configSettings")
-        if not isinstance(config_settings, dict):
-            config_settings = {}
-        status["config_settings"] = config_settings
-        status["screen_emulation"] = config_settings.get("screenEmulation") if isinstance(config_settings.get("screenEmulation"), dict) else {}
-        status["user_agent"] = config_settings.get("emulatedUserAgent") or config_settings.get("userAgent")
-        throttling = config_settings.get("throttling") if isinstance(config_settings.get("throttling"), dict) else {}
-        status["network_throttling"] = throttling
-        status["cpu_throttling"] = {
-            "throttlingMethod": config_settings.get("throttlingMethod"),
-            "cpuSlowdownMultiplier": throttling.get("cpuSlowdownMultiplier") if isinstance(throttling, dict) else None,
-        }
-        status["storage_reset"] = {
-            "disableStorageReset": config_settings.get("disableStorageReset"),
-            "clearStorageTypes": config_settings.get("clearStorageTypes"),
-        }
-        status["redirect_chain"] = self._redirect_chain(report)
-        status["performance_audit_refs"] = self._performance_audit_refs(report)
-        status["lighthouse_metrics"] = self._performance_metrics(report)
-
-    def _redirect_chain(self, report: dict[str, object]) -> list[dict[str, object]]:
-        audits = report.get("audits")
-        if not isinstance(audits, dict):
-            return []
-        redirects = audits.get("redirects")
-        if not isinstance(redirects, dict):
-            return []
-        details = redirects.get("details")
-        if not isinstance(details, dict):
-            return []
-        items = details.get("items")
-        return items if isinstance(items, list) else []
-
-    def _performance_audit_refs(self, report: dict[str, object]) -> list[dict[str, object]]:
-        categories = report.get("categories")
-        if not isinstance(categories, dict):
-            return []
-        performance = categories.get("performance")
-        if not isinstance(performance, dict):
-            return []
-        audit_refs = performance.get("auditRefs")
-        if not isinstance(audit_refs, list):
-            return []
-        return [
-            {
-                "id": item.get("id"),
-                "weight": item.get("weight"),
-                "group": item.get("group"),
-            }
-            for item in audit_refs
-            if isinstance(item, dict)
-        ]
-
-    def _performance_metrics(self, report: dict[str, object]) -> dict[str, object]:
-        audits = report.get("audits")
-        if not isinstance(audits, dict):
-            return {}
-        metric_ids = [
-            "first-contentful-paint",
-            "largest-contentful-paint",
-            "speed-index",
-            "interactive",
-            "total-blocking-time",
-            "cumulative-layout-shift",
-            "server-response-time",
-            "dom-size",
-            "network-requests",
-            "total-byte-weight",
-            "mainthread-work-breakdown",
-            "bootup-time",
-            "unused-javascript",
-            "unused-css-rules",
-            "uses-optimized-images",
-            "uses-responsive-images",
-            "efficient-animated-content",
-            "modern-image-formats",
-            "offscreen-images",
-            "render-blocking-resources",
-            "unminified-css",
-            "unminified-javascript",
-            "uses-text-compression",
-            "uses-rel-preconnect",
-            "uses-rel-preload",
-            "third-party-summary",
-            "diagnostics",
-            "metrics",
-        ]
-        metrics: dict[str, object] = {}
-        for audit_id in metric_ids:
-            audit = audits.get(audit_id)
-            if not isinstance(audit, dict):
-                continue
-            metrics[audit_id] = self._audit_payload(audit)
-        return metrics
-
-    def _audit_payload(self, audit: dict[str, object]) -> dict[str, object]:
-        payload: dict[str, object] = {
-            "score": audit.get("score"),
-            "scoreDisplayMode": audit.get("scoreDisplayMode"),
-            "numericValue": audit.get("numericValue"),
-            "numericUnit": audit.get("numericUnit"),
-            "displayValue": audit.get("displayValue"),
-            "title": audit.get("title"),
-            "description": audit.get("description"),
-        }
-        details = audit.get("details")
-        if isinstance(details, dict):
-            payload["details"] = details
-        return payload
 
     def _timeout_seconds(self) -> int:
         env_value = os.environ.get("BEACON_LIGHTHOUSE_TIMEOUT")
