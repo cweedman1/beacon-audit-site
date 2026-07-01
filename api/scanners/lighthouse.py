@@ -6,8 +6,12 @@ import os
 import shutil
 import subprocess
 import threading
+import urllib.error
+import urllib.parse
+import urllib.request
 from pathlib import Path
 from time import perf_counter
+from typing import Any
 
 from api.models import Category, Finding, ScannerResult, ScannerStatus, Severity
 from api.runtime import RuntimeManager
@@ -24,6 +28,34 @@ LIGHTHOUSE_CATEGORIES = {
 logger = logging.getLogger(__name__)
 
 
+class PageSpeedProviderError(Exception):
+    def __init__(self, reason: str, details: dict[str, object] | None = None) -> None:
+        super().__init__(reason)
+        self.reason = reason
+        self.details = details or {}
+
+
+class PerformanceProvider:
+    name = "performance_provider"
+
+    def scan(self, scanner: "LighthouseScanner", target_url: str) -> ScannerResult:
+        raise NotImplementedError
+
+
+class GooglePageSpeedProvider(PerformanceProvider):
+    name = "google_pagespeed"
+
+    def scan(self, scanner: "LighthouseScanner", target_url: str) -> ScannerResult:
+        return scanner._scan_google_pagespeed(target_url)
+
+
+class LocalLighthouseProvider(PerformanceProvider):
+    name = "local_lighthouse"
+
+    def scan(self, scanner: "LighthouseScanner", target_url: str) -> ScannerResult:
+        return scanner._scan_local(target_url)
+
+
 class LighthouseScanner(Scanner):
     name = "lighthouse"
     DEFAULT_TIMEOUTS = {
@@ -37,6 +69,17 @@ class LighthouseScanner(Scanner):
         self.audit_type = audit_type
 
     def scan(self, target_url: str) -> ScannerResult:
+        google_provider = GooglePageSpeedProvider()
+        local_provider = LocalLighthouseProvider()
+        try:
+            return google_provider.scan(self, target_url)
+        except PageSpeedProviderError as exc:
+            local_started = perf_counter()
+            local_result = local_provider.scan(self, target_url)
+            local_elapsed_ms = round((perf_counter() - local_started) * 1000)
+            return self._with_provider_fallback(local_result, exc, local_elapsed_ms)
+
+    def _scan_local(self, target_url: str) -> ScannerResult:
         base_timeout = self._timeout_seconds()
         retry_timeout = max(base_timeout + 60, round(base_timeout * 1.5))
         status: dict[str, object] = {
@@ -458,6 +501,274 @@ class LighthouseScanner(Scanner):
             included_in_score=True,
             scores=scores,
             warnings=warnings,
+        )
+
+    def _scan_google_pagespeed(self, target_url: str) -> ScannerResult:
+        timeout = self._pagespeed_timeout_seconds()
+        started = perf_counter()
+        status: dict[str, object] = {
+            "executed": True,
+            "succeeded": False,
+            "timed_out": False,
+            "failed": False,
+            "skipped": False,
+            "launched": True,
+            "completed": False,
+            "json_parsed": False,
+            "scores_returned": False,
+            "raw_scores": {},
+            "parse_error": None,
+            "fallback_used": False,
+            "provider_used": "google_pagespeed",
+            "provider_attempted": "google_pagespeed",
+            "fallback_occurred": False,
+            "fallback_reason": None,
+            "google_fetch_time_ms": None,
+            "local_lighthouse_execution_time_ms": None,
+            "http_status": None,
+            "api_key_configured": bool(os.environ.get("PAGESPEED_API_KEY")),
+            "requested_url": target_url,
+            "final_url": None,
+            "fetch_time": None,
+            "config_settings": {},
+            "screen_emulation": {},
+            "user_agent": None,
+            "cpu_throttling": {},
+            "network_throttling": {},
+            "storage_reset": {},
+            "run_warnings": [],
+            "environment": {},
+            "lighthouse_metrics": {},
+            "performance_audit_refs": [],
+            "attempts": [],
+            "command": "Google PageSpeed Insights API",
+            "command_parts": ["google_pagespeed", "mobile", "performance", "accessibility", "best-practices", "seo"],
+            "lighthouse_flags": [],
+            "chrome_flags": [],
+            "retry_count": 0,
+            "retry_result_used": False,
+            "accepted_attempt": 1,
+            "runtime_source": "Google PageSpeed Insights",
+        }
+        request_url = self._pagespeed_url(target_url)
+        try:
+            request = urllib.request.Request(
+                request_url,
+                headers={"User-Agent": "BeaconAudit/1.0 (+https://beacon-audit.com)"},
+            )
+            with urllib.request.urlopen(request, timeout=timeout) as response:
+                status["http_status"] = response.status
+                body = response.read()
+        except TimeoutError as exc:
+            elapsed_ms = round((perf_counter() - started) * 1000)
+            details = {"reason": "timeout", "timeout_seconds": timeout, "google_fetch_time_ms": elapsed_ms}
+            raise PageSpeedProviderError("Google PageSpeed Insights timed out.", details) from exc
+        except urllib.error.HTTPError as exc:
+            elapsed_ms = round((perf_counter() - started) * 1000)
+            error_body = self._tail(exc.read())
+            details = {
+                "reason": self._pagespeed_http_reason(exc.code, error_body),
+                "http_status": exc.code,
+                "response_body": error_body,
+                "google_fetch_time_ms": elapsed_ms,
+            }
+            raise PageSpeedProviderError("Google PageSpeed Insights returned an HTTP error.", details) from exc
+        except urllib.error.URLError as exc:
+            elapsed_ms = round((perf_counter() - started) * 1000)
+            details = {"reason": "network_failure", "error": str(exc.reason), "google_fetch_time_ms": elapsed_ms}
+            raise PageSpeedProviderError("Google PageSpeed Insights network request failed.", details) from exc
+        except OSError as exc:
+            elapsed_ms = round((perf_counter() - started) * 1000)
+            details = {"reason": "network_failure", "error": str(exc), "google_fetch_time_ms": elapsed_ms}
+            raise PageSpeedProviderError("Google PageSpeed Insights request failed.", details) from exc
+
+        status["google_fetch_time_ms"] = round((perf_counter() - started) * 1000)
+        try:
+            payload = json.loads(body.decode("utf-8"))
+        except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+            details = {
+                "reason": "invalid_response",
+                "http_status": status.get("http_status"),
+                "google_fetch_time_ms": status.get("google_fetch_time_ms"),
+                "parse_error": str(exc),
+            }
+            raise PageSpeedProviderError("Google PageSpeed Insights returned invalid JSON.", details) from exc
+
+        lighthouse_result = payload.get("lighthouseResult")
+        if not isinstance(lighthouse_result, dict):
+            details = {
+                "reason": "invalid_response",
+                "http_status": status.get("http_status"),
+                "google_fetch_time_ms": status.get("google_fetch_time_ms"),
+                "response_keys": sorted(payload.keys()) if isinstance(payload, dict) else [],
+            }
+            raise PageSpeedProviderError("Google PageSpeed Insights response did not include Lighthouse results.", details)
+
+        status["completed"] = True
+        status["json_parsed"] = True
+        status["attempts"] = [
+            {
+                "attempt": 1,
+                "provider": "google_pagespeed",
+                "status": "Verified",
+                "elapsed_ms": status.get("google_fetch_time_ms"),
+                "http_status": status.get("http_status"),
+            }
+        ]
+        self._attach_report_debug(status, lighthouse_result)
+        return self._result_from_lighthouse_report(target_url, lighthouse_result, status)
+
+    def _pagespeed_url(self, target_url: str) -> str:
+        params: list[tuple[str, str]] = [
+            ("url", target_url),
+            ("strategy", "mobile"),
+            ("category", "performance"),
+            ("category", "accessibility"),
+            ("category", "best-practices"),
+            ("category", "seo"),
+        ]
+        api_key = os.environ.get("PAGESPEED_API_KEY")
+        if api_key:
+            params.append(("key", api_key))
+        return "https://www.googleapis.com/pagespeedonline/v5/runPagespeed?" + urllib.parse.urlencode(params)
+
+    def _pagespeed_timeout_seconds(self) -> int:
+        value = os.environ.get("PAGESPEED_TIMEOUT") or os.environ.get("PUBLIC_SCAN_TIMEOUT")
+        if value:
+            try:
+                return max(5, int(value))
+            except ValueError:
+                logger.warning("Ignoring invalid PageSpeed timeout value=%s", value)
+        return 45
+
+    def _pagespeed_http_reason(self, status_code: int, body: str) -> str:
+        lowered = body.lower()
+        if status_code == 429 or "quota" in lowered or "rate limit" in lowered:
+            return "quota_exceeded"
+        if status_code == 400:
+            return "api_error"
+        if status_code in {401, 403}:
+            return "api_auth_error"
+        if status_code >= 500:
+            return "api_unavailable"
+        return "api_error"
+
+    def _with_provider_fallback(self, result: ScannerResult, exc: PageSpeedProviderError, local_elapsed_ms: int) -> ScannerResult:
+        raw = dict(result.raw)
+        status: dict[str, Any]
+        if isinstance(raw.get("status"), dict):
+            status = dict(raw["status"])
+        else:
+            status = {}
+        status.update(
+            {
+                "provider_used": "local_lighthouse",
+                "provider_attempted": "google_pagespeed",
+                "fallback_occurred": True,
+                "fallback_used": True,
+                "fallback_reason": exc.reason,
+                "google_pagespeed": exc.details,
+                "local_lighthouse_execution_time_ms": local_elapsed_ms,
+            }
+        )
+        raw["status"] = status
+        warnings = [*result.warnings, f"Google PageSpeed Insights unavailable; used local Lighthouse fallback: {exc.reason}"]
+        return ScannerResult(
+            scanner=result.scanner,
+            target_url=result.target_url,
+            ok=result.ok,
+            score=result.score,
+            findings=result.findings,
+            raw=raw,
+            elapsed_ms=result.elapsed_ms,
+            status=result.status,
+            included_in_score=result.included_in_score,
+            scores=result.scores,
+            error=result.error,
+            warnings=warnings,
+        )
+
+    def _result_from_lighthouse_report(self, target_url: str, report: dict[str, object], status: dict[str, object]) -> ScannerResult:
+        findings: list[Finding] = []
+        scores: dict[str, int] = {}
+        categories = report.get("categories")
+        if not isinstance(categories, dict):
+            categories = {}
+        for key, category in LIGHTHOUSE_CATEGORIES.items():
+            category_payload = categories.get(key)
+            if not isinstance(category_payload, dict):
+                continue
+            raw_score = category_payload.get("score")
+            if raw_score is None:
+                continue
+            try:
+                score = round(float(raw_score) * 100)
+            except (TypeError, ValueError):
+                continue
+            scores[key] = score
+            if score < 90:
+                findings.append(
+                    Finding(
+                        scanner=self.name,
+                        category=category,
+                        title=f"Lighthouse {key.replace('-', ' ').title()} score is {score}",
+                        description=f"The Lighthouse {key} category scored below the recommended 90 threshold.",
+                        severity=Severity.HIGH if score < 50 else Severity.MEDIUM,
+                        recommendation=f"Review Lighthouse recommendations and improve the {key} category.",
+                        impact="Lower Lighthouse scores can reduce conversion, trust, search visibility, or usability.",
+                        evidence={"score": score},
+                        weight=max(3, round((90 - score) / 4)),
+                    )
+                )
+
+        audits = report.get("audits", {})
+        if isinstance(audits, dict):
+            for audit_id in ["largest-contentful-paint", "cumulative-layout-shift", "total-blocking-time", "uses-optimized-images", "meta-description", "document-title"]:
+                audit = audits.get(audit_id)
+                if not isinstance(audit, dict) or audit.get("score") in (None, 1):
+                    continue
+                title = audit.get("title", audit_id)
+                findings.append(
+                    Finding(
+                        scanner=self.name,
+                        category=self._audit_category(audit_id),
+                        title=str(title),
+                        description=str(audit.get("description", "Lighthouse reported an optimization opportunity.")),
+                        severity=Severity.MEDIUM,
+                        recommendation="Apply the Lighthouse recommendation for this audit.",
+                        impact="Improving this item can improve visitor experience and search presentation.",
+                        evidence={"audit_id": audit_id, "display_value": audit.get("displayValue")},
+                        weight=5,
+                    )
+                )
+
+        overall = round(sum(scores.values()) / len(scores)) if scores else None
+        if overall is None:
+            runtime_error = status.get("runtime_error")
+            if isinstance(runtime_error, dict):
+                message = str(runtime_error.get("message") or runtime_error.get("code") or "No Lighthouse category scores returned")
+            else:
+                message = "No Lighthouse category scores returned"
+            status["error"] = message
+            status["failed"] = True
+            self._log_status(status)
+            return self._failed(target_url, message, status)
+
+        status["raw_scores"] = scores
+        status["scores_returned"] = True
+        status["succeeded"] = True
+        status["failed"] = False
+        self._log_status(status)
+        return ScannerResult(
+            self.name,
+            target_url,
+            True,
+            overall,
+            findings,
+            {"scores": scores, "status": status},
+            status=ScannerStatus.OK,
+            included_in_score=True,
+            scores=scores,
         )
 
     def _command(self, runtime: object | None = None) -> list[str] | None:

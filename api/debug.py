@@ -128,6 +128,11 @@ def _scanner_stage(label: str, result: ScannerResult | None) -> dict[str, Any]:
         if isinstance(status, dict):
             extra["lighthouse"] = {
                 "mode": _lighthouse_mode(status),
+                "provider_used": status.get("provider_used"),
+                "fallback_occurred": status.get("fallback_occurred"),
+                "fallback_reason": status.get("fallback_reason"),
+                "google_fetch_time_ms": status.get("google_fetch_time_ms"),
+                "local_lighthouse_execution_time_ms": status.get("local_lighthouse_execution_time_ms"),
                 "raw_category_scores": status.get("raw_scores", {}),
                 "runtime": status.get("runtime_source"),
                 "node_version": status.get("node_version"),
@@ -200,6 +205,15 @@ def _lighthouse_debug(report: AuditReport) -> dict[str, Any]:
         status = {}
     return {
         "mode": _lighthouse_mode(status),
+        "provider_used": status.get("provider_used"),
+        "provider_attempted": status.get("provider_attempted"),
+        "fallback_occurred": status.get("fallback_occurred"),
+        "fallback_reason": status.get("fallback_reason"),
+        "google_fetch_time_ms": status.get("google_fetch_time_ms"),
+        "local_lighthouse_execution_time_ms": status.get("local_lighthouse_execution_time_ms"),
+        "google_pagespeed": status.get("google_pagespeed"),
+        "http_status": status.get("http_status"),
+        "api_key_configured": status.get("api_key_configured"),
         "raw_category_scores": status.get("raw_scores", {}),
         "accepted_attempt": status.get("accepted_attempt"),
         "retry_occurred": bool(status.get("retry_count")),
