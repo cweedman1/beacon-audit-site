@@ -1,0 +1,1 @@
+window.BEACON_API_URL = "https://beacon-audit-api.onrender.com";

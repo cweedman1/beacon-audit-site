@@ -1,0 +1,10 @@
+{
+    "@context":"https://schema.org",
+    "@type":"Service",
+    "name":"Beacon Audit intake",
+    "provider":{
+      "@type":"Organization",
+      "name":"Beacon Audit"
+    },
+    "serviceType":"Digital stewardship audit"
+  }

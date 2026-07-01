@@ -39,18 +39,7 @@
   <link rel="stylesheet" href="/css/responsive.css">
   <link rel="stylesheet" href="/css/utilities.css">
 
-  <script type="application/ld+json">
-  {
-    "@context":"https://schema.org",
-    "@type":"Service",
-    "name":"Beacon Audit intake",
-    "provider":{
-      "@type":"Organization",
-      "name":"Beacon Audit"
-    },
-    "serviceType":"Digital stewardship audit"
-  }
-  </script>
+  <script type="application/ld+json" src="/includes/schema/scan.jsonld"></script>
 </head>
 
 <body>
@@ -203,10 +192,7 @@
 
 <script src="/js/nav.js" defer></script>
 
-<script>
-window.BEACON_API_URL = "https://beacon-audit-api.onrender.com";
-</script>
-
+<script src="/js/config.js" defer></script>
 <script src="/js/scan.js" defer></script>
 
 </body>
