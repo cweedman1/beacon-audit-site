@@ -201,6 +201,30 @@ def _lighthouse_debug(report: AuditReport) -> dict[str, Any]:
     return {
         "mode": _lighthouse_mode(status),
         "raw_category_scores": status.get("raw_scores", {}),
+        "accepted_attempt": status.get("accepted_attempt"),
+        "retry_occurred": bool(status.get("retry_count")),
+        "retry_count": status.get("retry_count"),
+        "retry_result_used": status.get("retry_result_used"),
+        "command": status.get("command"),
+        "command_parts": status.get("command_parts", []),
+        "lighthouse_flags": status.get("lighthouse_flags", []),
+        "chrome_flags": status.get("chrome_flags", []),
+        "attempts": status.get("attempts", []),
+        "requested_url": status.get("requested_url"),
+        "final_url": status.get("final_url"),
+        "redirect_chain": status.get("redirect_chain", []),
+        "fetch_time": status.get("fetch_time"),
+        "config_settings": status.get("config_settings", {}),
+        "screen_emulation": status.get("screen_emulation", {}),
+        "user_agent": status.get("user_agent"),
+        "cpu_throttling": status.get("cpu_throttling", {}),
+        "network_throttling": status.get("network_throttling", {}),
+        "storage_reset": status.get("storage_reset", {}),
+        "run_warnings": status.get("run_warnings", []),
+        "environment": status.get("environment", {}),
+        "performance_audit_refs": status.get("performance_audit_refs", []),
+        "lighthouse_metrics": status.get("lighthouse_metrics", {}),
+        "psi_comparison": _psi_comparison(status),
         "runtime": status.get("runtime_source"),
         "node_version": status.get("node_version"),
         "chromium_version": status.get("chrome_version"),
@@ -212,6 +236,68 @@ def _lighthouse_debug(report: AuditReport) -> dict[str, Any]:
         "failure_reason": status.get("error") or status.get("parse_error"),
         "scores_returned": status.get("scores_returned"),
         "included_in_score": status.get("included_in_score"),
+    }
+
+
+def _psi_comparison(status: dict[str, Any]) -> dict[str, Any]:
+    retry_used = bool(status.get("retry_result_used"))
+    command = str(status.get("command") or "")
+    config = status.get("config_settings") if isinstance(status.get("config_settings"), dict) else {}
+    throttling = config.get("throttling") if isinstance(config.get("throttling"), dict) else {}
+    differences = [
+        {
+            "difference": "Beacon runs Lighthouse CLI in Beacon's Render/runtime environment; Google PSI runs Lighthouse in Google's managed environment.",
+            "could_explain_67_vs_99": "Medium",
+            "evidence": {
+                "runtime": status.get("runtime_source"),
+                "node": status.get("node_version"),
+                "chromium": status.get("chrome_version"),
+                "lighthouse": status.get("lighthouse_version"),
+            },
+        },
+        {
+            "difference": "Beacon uses container/headless Chrome flags.",
+            "could_explain_67_vs_99": "Medium",
+            "evidence": status.get("chrome_flags", []),
+        },
+        {
+            "difference": "Beacon retry mode changes Lighthouse throttling and storage flags.",
+            "could_explain_67_vs_99": "High" if retry_used else "Low",
+            "evidence": {
+                "retry_result_used": retry_used,
+                "retry_flag_changes": status.get("retry_flag_changes", []),
+                "attempts": status.get("attempts", []),
+            },
+        },
+        {
+            "difference": "Beacon may test a different final URL after redirects than the URL entered in PSI.",
+            "could_explain_67_vs_99": "Medium" if status.get("requested_url") != status.get("final_url") else "Low",
+            "evidence": {
+                "requested_url": status.get("requested_url"),
+                "final_url": status.get("final_url"),
+                "redirect_chain": status.get("redirect_chain", []),
+            },
+        },
+        {
+            "difference": "Beacon uses Lighthouse config settings returned by local Lighthouse, not PSI's service-side runtime.",
+            "could_explain_67_vs_99": "High" if config.get("throttlingMethod") == "provided" else "Low",
+            "evidence": {
+                "formFactor": config.get("formFactor"),
+                "throttlingMethod": config.get("throttlingMethod"),
+                "screenEmulation": config.get("screenEmulation"),
+                "emulatedUserAgent": config.get("emulatedUserAgent"),
+                "disableStorageReset": config.get("disableStorageReset"),
+                "throttling": throttling,
+            },
+        },
+    ]
+    return {
+        "beacon_score_source": "Lighthouse JSON categories.performance.score",
+        "accepted_attempt": status.get("accepted_attempt"),
+        "retry_result_used": retry_used,
+        "differences": differences,
+        "performance_metric_inputs": status.get("lighthouse_metrics", {}),
+        "recommended_next_step": "Compare this payload against PSI Lighthouse metric values before changing scoring or architecture.",
     }
 
 
