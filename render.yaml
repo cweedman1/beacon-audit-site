@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: beacon-audit-public-api
+    runtime: docker
+    plan: starter
+    healthCheckPath: /health
+    envVars:
+      - key: ALLOWED_ORIGINS
+        value: https://beacon-audit.com,https://www.beacon-audit.com
+      - key: BEACON_HOME
+        value: /tmp/beacon
+      - key: BEACON_TEMP
+        value: /tmp/beacon/temp
+      - key: PUBLIC_SCAN_TIMEOUT
+        value: "60"
+      - key: PUBLIC_RATE_LIMIT_PER_MINUTE
+        value: "10"
+      - key: CHROME_PATH
+        value: /usr/bin/chromium
