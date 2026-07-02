@@ -6,6 +6,7 @@ import os
 from fastapi import APIRouter, HTTPException, Request
 
 from api.debug import debug_enabled
+from api.ops_logging import log_scan_failure
 from api.rate_limit import InMemoryRateLimiter, RateLimitExceeded
 from api.schemas import FreeScanRequest, FreeScanResponse, HealthResponse, RootResponse
 from api.service import PublicAPIServiceError, QuickScanService
@@ -49,6 +50,7 @@ def free_scan(payload: FreeScanRequest, request: Request) -> FreeScanResponse:
         rate_limiter.check(_client_key(request))
         return service.scan(payload.url, debug=debug_enabled(request.query_params.get("debug"), env_value=os.environ.get("BEACON_DEBUG")))
     except RateLimitExceeded as exc:
+        log_scan_failure(raw_url=payload.url, failure_type="rate_limited", message=str(exc), http_status=429)
         raise HTTPException(status_code=429, detail={"error": "rate_limited", "message": str(exc), "status_code": 429}) from exc
     except PublicAPIServiceError as exc:
         raise HTTPException(status_code=exc.status_code, detail={"error": exc.code, "message": exc.message, "status_code": exc.status_code}) from exc

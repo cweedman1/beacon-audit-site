@@ -36,6 +36,13 @@ class RecommendedFix(BaseModel):
     business_impact: str
 
 
+class ReportMetadata(BaseModel):
+    completed_at: str | None
+    scan_duration_ms: int
+    scan_duration_seconds: float
+    checks_completed: list[str]
+
+
 class FreeScanResponse(BaseModel):
     api_version: str
     scan_engine: str
@@ -46,6 +53,7 @@ class FreeScanResponse(BaseModel):
     top_issues: list[IssueSummary]
     recommended_fixes: list[RecommendedFix]
     estimated_effort: str
+    report_metadata: ReportMetadata
     debug: dict[str, Any] | None = None
 
 

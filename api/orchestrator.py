@@ -6,6 +6,7 @@ from time import perf_counter
 
 from api.capabilities import capability_matrix, section_contract
 from api.models import AuditReport, Finding, ScannerResult, ScannerStatus
+from api.ops_logging import log_failure_metric
 from api.opportunities import OpportunityEngine
 from api.scanners import DnsScanner, HostingScanner, LighthouseScanner, SecurityHeadersScanner, SslScanner
 from api.scanners.base import Scanner
@@ -43,7 +44,19 @@ class AuditEngine:
         with ThreadPoolExecutor(max_workers=min(self.max_workers, len(self.scanners))) as executor:
             futures = {executor.submit(scanner.run, normalized_url): scanner.name for scanner in self.scanners}
             for future in as_completed(futures):
-                results.append(future.result())
+                scanner_name = futures[future]
+                try:
+                    results.append(future.result())
+                except Exception as exc:
+                    log_failure_metric(
+                        "scanner_exception",
+                        domain=normalize_url(normalized_url).split("://", 1)[-1].split("/", 1)[0],
+                        scanner=scanner_name,
+                        status="failure",
+                        failure_type="scanner_exception",
+                        message=str(exc),
+                    )
+                    raise
 
         results.sort(key=lambda result: result.scanner)
         results = [self._normalize_result(result) for result in results]

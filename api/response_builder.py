@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from api.models import AuditReport, Finding, Opportunity, Severity
-from api.schemas import CategoryGrade, FreeScanResponse, IssueSummary, OverallGrade, RecommendedFix
+from api.schemas import CategoryGrade, FreeScanResponse, IssueSummary, OverallGrade, RecommendedFix, ReportMetadata
 
 
 API_VERSION = "1.0"
@@ -32,6 +32,7 @@ def build_public_response(report: AuditReport) -> FreeScanResponse:
         top_issues=top_issues,
         recommended_fixes=fixes,
         estimated_effort=_estimated_effort(report.opportunities),
+        report_metadata=_report_metadata(report),
     )
 
 
@@ -136,3 +137,37 @@ def _complexity_effort(complexity: str) -> str:
         return "2-4 hours"
     return "30-60 minutes"
 
+
+def _report_metadata(report: AuditReport) -> ReportMetadata:
+    duration_ms = int(report.elapsed_ms)
+    return ReportMetadata(
+        completed_at=_completed_at(report),
+        scan_duration_ms=duration_ms,
+        scan_duration_seconds=round(duration_ms / 1000, 1),
+        checks_completed=_checks_completed(report),
+    )
+
+
+def _completed_at(report: AuditReport) -> str | None:
+    value = (report.metadata or {}).get("scan_finished_at")
+    return str(value) if value else report.scanned_at.isoformat()
+
+
+def _checks_completed(report: AuditReport) -> list[str]:
+    scanner_labels = {
+        "dns": "DNS",
+        "ssl": "HTTPS",
+        "security_headers": "Security Headers",
+        "lighthouse": "Website Performance",
+    }
+    checks: list[str] = []
+    for result in report.scanner_results:
+        label = scanner_labels.get(result.scanner)
+        if label and result.ok:
+            checks.append(label)
+
+    technology = (report.metadata or {}).get("technology_profile")
+    if technology:
+        checks.append("Technology Detection")
+
+    return checks

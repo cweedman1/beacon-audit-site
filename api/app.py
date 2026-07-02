@@ -5,6 +5,7 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from api.ops_logging import log_startup_summary
 from api.routes import router
 
 
@@ -24,6 +25,7 @@ def create_app() -> FastAPI:
         allow_headers=["Content-Type"],
     )
     app.include_router(router)
+    log_startup_summary()
     return app
 
 
@@ -35,4 +37,3 @@ def _allowed_origins() -> list[str]:
 
 
 app = create_app()
-

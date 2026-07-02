@@ -5,6 +5,7 @@ import os
 from time import perf_counter
 
 from api.debug import DebugTrace
+from api.ops_logging import log_scan_failure, log_scan_success
 from api.orchestrator import AuditEngine
 from api.response_builder import build_public_response
 from api.schemas import FreeScanResponse
@@ -26,7 +27,9 @@ class QuickScanService:
         self.timeout_seconds = timeout_seconds or int(os.environ.get("PUBLIC_SCAN_TIMEOUT", "60"))
 
     def scan(self, raw_url: str, *, debug: bool = False) -> FreeScanResponse:
+        scan_start = perf_counter()
         trace = DebugTrace(target_url=raw_url) if debug else None
+        normalized_url: str | None = None
         try:
             validation_start = perf_counter()
             normalized_url = normalize_public_url(raw_url)
@@ -50,10 +53,25 @@ class QuickScanService:
         except PublicAPIValidationError as exc:
             if trace:
                 trace.stage("URL Validation", success=False, summary=str(exc))
+            log_scan_failure(
+                raw_url=raw_url,
+                failure_type="invalid_domain",
+                message=str(exc),
+                elapsed_ms=round((perf_counter() - scan_start) * 1000),
+                http_status=400,
+            )
             raise PublicAPIServiceError("invalid_url", str(exc), 400) from exc
         except PublicAPISecurityError as exc:
             if trace:
                 trace.stage("SSRF Protection", success=False, summary=str(exc))
+            log_scan_failure(
+                raw_url=raw_url,
+                normalized_url=normalized_url,
+                failure_type="blocked_target",
+                message=str(exc),
+                elapsed_ms=round((perf_counter() - scan_start) * 1000),
+                http_status=403,
+            )
             raise PublicAPIServiceError("blocked_target", str(exc), 403) from exc
 
         executor = ThreadPoolExecutor(max_workers=1)
@@ -71,6 +89,7 @@ class QuickScanService:
                 )
         except TimeoutError as exc:
             future.cancel()
+            elapsed_ms = round((perf_counter() - scan_start) * 1000)
             if trace:
                 trace.stage(
                     "QuickScan Orchestrator",
@@ -78,8 +97,17 @@ class QuickScanService:
                     success=False,
                     summary="The scan exceeded the public API time limit.",
                 )
+            log_scan_failure(
+                raw_url=raw_url,
+                normalized_url=normalized_url,
+                failure_type="timeout",
+                message="The scan exceeded the public API time limit.",
+                elapsed_ms=elapsed_ms,
+                http_status=408,
+            )
             raise PublicAPIServiceError("scan_timeout", "The scan exceeded the public API time limit.", 408) from exc
         except Exception as exc:
+            elapsed_ms = round((perf_counter() - scan_start) * 1000)
             if trace:
                 trace.stage(
                     "QuickScan Orchestrator",
@@ -87,6 +115,14 @@ class QuickScanService:
                     success=False,
                     summary=str(exc),
                 )
+            log_scan_failure(
+                raw_url=raw_url,
+                normalized_url=normalized_url,
+                failure_type="unexpected_exception",
+                message=str(exc),
+                elapsed_ms=elapsed_ms,
+                http_status=500,
+            )
             raise PublicAPIServiceError("scan_failed", "The scan could not be completed.", 500) from exc
         finally:
             executor.shutdown(wait=False, cancel_futures=True)
@@ -96,4 +132,5 @@ class QuickScanService:
         response_elapsed_ms = round((perf_counter() - response_start) * 1000)
         if trace:
             response.debug = trace.payload(report, normalized_url=normalized_url, response_elapsed_ms=response_elapsed_ms)
+        log_scan_success(report)
         return response
