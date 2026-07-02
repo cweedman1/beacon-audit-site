@@ -33,12 +33,20 @@ const categoryDescriptions = {
 };
 
 const checkedSignals = [
-  { title: "Google PageSpeed Insights", detail: "Performance and page experience signals." },
+  { title: "Website Performance", detail: "Performance and page experience signals." },
   { title: "SSL", detail: "HTTPS certificate and connection checks." },
   { title: "DNS", detail: "Public records and domain routing." },
   { title: "Security Headers", detail: "Browser-facing protection settings." },
   { title: "Technology Detection", detail: "Public platform and infrastructure clues." },
   { title: "Beacon Analysis", detail: "Plain-English priority and effort review." }
+];
+
+const publicChecks = [
+  "DNS",
+  "HTTPS",
+  "Security Headers",
+  "Website Performance",
+  "Technology Detection"
 ];
 
 if (scanForm && scanResult) {
@@ -110,9 +118,15 @@ if (scanForm && scanResult) {
 function renderProgress(domain) {
   return `
     <section class="scan-progress" aria-label="Website review progress">
-      <div>
+      <div class="scan-progress__summary">
         <p class="eyebrow">Beacon is reviewing</p>
         <h2>${escapeHtml(normalizeDomain(domain))}</h2>
+        <div class="scan-progress__wait-note">
+          <strong>Building your Beacon report</strong>
+          <p>Most website reviews finish in 30-60 seconds.</p>
+          <p>Some websites may take up to 90 seconds.</p>
+          <p>Please keep this page open while Beacon completes the review.</p>
+        </div>
         <p>Beacon is checking public website signals and preparing a plain-English report.</p>
       </div>
       <ol class="scan-progress__steps">
@@ -284,6 +298,10 @@ function renderScanReport(report) {
         </div>
       </section>
 
+      ${renderReportDetails(report)}
+
+      ${renderHelpSection()}
+
       <footer class="scan-report__footer">
         <p>Beacon combines trusted public website analysis with plain-English recommendations so business owners know what to fix first.</p>
       </footer>
@@ -367,6 +385,54 @@ function renderCheckedSignal(item) {
   `;
 }
 
+function renderReportDetails(report) {
+  const metadata = report?.report_metadata && typeof report.report_metadata === "object" ? report.report_metadata : {};
+  const completedAt = formatCompletedAt(metadata.completed_at);
+  const duration = formatScanDuration(metadata.scan_duration_seconds);
+
+  return `
+    <section class="scan-report__section scan-report__section--details" aria-labelledby="report-details-heading">
+      <div class="scan-report__section-header">
+        <div>
+          <p class="eyebrow">Report Details</p>
+          <h3 id="report-details-heading">Review record.</h3>
+        </div>
+      </div>
+      <div class="report-details">
+        <dl class="report-details__meta">
+          ${completedAt ? `<div><dt>Completed</dt><dd>${escapeHtml(completedAt)}</dd></div>` : ""}
+          ${duration ? `<div><dt>Scan Duration</dt><dd>${escapeHtml(duration)}</dd></div>` : ""}
+        </dl>
+        <div class="report-details__checks">
+          <strong>Public checks completed</strong>
+          <ul>
+            ${publicChecks.map((check) => `<li><span aria-hidden="true">${icon("check")}</span>${escapeHtml(check)}</li>`).join("")}
+          </ul>
+        </div>
+      </div>
+    </section>
+  `;
+}
+
+function renderHelpSection() {
+  return `
+    <section class="scan-report__section scan-report__section--help" aria-labelledby="report-help-heading">
+      <div class="report-help">
+        <div>
+          <p class="eyebrow">Need Help?</p>
+          <h3 id="report-help-heading">Need help implementing these recommendations?</h3>
+        </div>
+        <div>
+          <p>Some organizations prefer to make these improvements themselves.</p>
+          <p>Others prefer help prioritizing and implementing them.</p>
+          <p>If you'd like assistance, we'd be happy to help.</p>
+          <a href="mailto:contact@beacon-audit.com">contact@beacon-audit.com</a>
+        </div>
+      </div>
+    </section>
+  `;
+}
+
 function renderEmptyCard(title, message) {
   return `
     <article class="empty-report-card">
@@ -415,9 +481,26 @@ function gradeFromScore(score) {
 }
 
 function formatElapsed(report) {
-  const elapsedMs = Number(report?.elapsed_ms ?? report?.debug?.elapsed_ms ?? report?.debug?.timing?.scan_elapsed_ms);
-  if (!Number.isFinite(elapsedMs)) return "";
-  return `${(elapsedMs / 1000).toFixed(1)} seconds`;
+  return formatScanDuration(report?.report_metadata?.scan_duration_seconds);
+}
+
+function formatScanDuration(value) {
+  const seconds = Number(value);
+  if (!Number.isFinite(seconds)) return "";
+  return `${Math.round(seconds)} seconds`;
+}
+
+function formatCompletedAt(value) {
+  if (!value) return "";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return String(value);
+  return date.toLocaleString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit"
+  });
 }
 
 function toneForGrade(grade) {
