@@ -13,6 +13,9 @@ from api.security import PublicAPISecurityError, validate_public_target
 from api.validation import PublicAPIValidationError, normalize_public_url
 
 
+WEBSITE_UNREACHABLE_MESSAGE = "We couldn't reach that website. Please check the website address and try again."
+
+
 class PublicAPIServiceError(Exception):
     def __init__(self, code: str, message: str, status_code: int) -> None:
         super().__init__(message)
@@ -60,7 +63,7 @@ class QuickScanService:
                 elapsed_ms=round((perf_counter() - scan_start) * 1000),
                 http_status=400,
             )
-            raise PublicAPIServiceError("invalid_url", str(exc), 400) from exc
+            raise PublicAPIServiceError("invalid_url", WEBSITE_UNREACHABLE_MESSAGE, 400) from exc
         except PublicAPISecurityError as exc:
             if trace:
                 trace.stage("SSRF Protection", success=False, summary=str(exc))
@@ -70,9 +73,9 @@ class QuickScanService:
                 failure_type="blocked_target",
                 message=str(exc),
                 elapsed_ms=round((perf_counter() - scan_start) * 1000),
-                http_status=403,
+                http_status=400,
             )
-            raise PublicAPIServiceError("blocked_target", str(exc), 403) from exc
+            raise PublicAPIServiceError("blocked_target", WEBSITE_UNREACHABLE_MESSAGE, 400) from exc
 
         executor = ThreadPoolExecutor(max_workers=1)
         engine_start = perf_counter()

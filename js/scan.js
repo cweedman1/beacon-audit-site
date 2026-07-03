@@ -3,7 +3,7 @@ const scanResult = document.querySelector("[data-scan-result]");
 const beaconApiBase = String(window.BEACON_API_URL || "").replace(/\/$/, "");
 
 const scanSteps = [
-  { label: "Preparing scan", detail: "Normalizing the domain and starting the review." },
+  { label: "Preparing scan", detail: "Preparing the website address and starting the review." },
   { label: "Resolving domain", detail: "Reviewing public domain records." },
   { label: "Verifying HTTPS", detail: "Confirming certificate and secure connection signals." },
   { label: "Reviewing Security Headers", detail: "Looking at browser-facing protection settings." },
@@ -53,10 +53,16 @@ if (scanForm && scanResult) {
   scanForm.addEventListener("submit", async (event) => {
     event.preventDefault();
     const formData = new FormData(scanForm);
-    const domain = String(formData.get("domain") || "").trim();
+    const rawDomain = String(formData.get("domain") || "");
+    const domain = normalizeDomain(rawDomain);
 
     if (!domain) {
-      showNotice("Enter a domain to prepare a website review.");
+      showNotice("Enter your company's website to prepare a website review.");
+      return;
+    }
+
+    if (!isValidHostname(domain)) {
+      showNotice("We couldn't reach that website. Please check the website address and try again.", "error");
       return;
     }
 
@@ -521,14 +527,31 @@ function toneForSeverity(value) {
 }
 
 function normalizeDomain(value) {
-  const raw = String(value || "").trim();
+  const raw = String(value || "").trim().toLowerCase();
   if (!raw) return "";
   try {
     const withProtocol = /^https?:\/\//i.test(raw) ? raw : `https://${raw}`;
-    return new URL(withProtocol).hostname.replace(/^www\./i, "");
+    return new URL(withProtocol).hostname.replace(/^www\./i, "").replace(/\.$/, "");
   } catch (error) {
-    return raw.replace(/^https?:\/\//i, "").replace(/^www\./i, "").replace(/\/$/, "");
+    return raw
+      .replace(/^https?:\/\//i, "")
+      .split(/[/?#]/, 1)[0]
+      .replace(/^www\./i, "")
+      .replace(/\.$/, "");
   }
+}
+
+function isValidHostname(value) {
+  const hostname = String(value || "");
+  if (!hostname || hostname.length > 253 || !hostname.includes(".")) return false;
+  if (/[^a-z0-9.-]/.test(hostname)) return false;
+  if (hostname.startsWith(".") || hostname.endsWith(".") || hostname.includes("..")) return false;
+  return hostname.split(".").every((label) => (
+    label.length > 0
+    && label.length <= 63
+    && !label.startsWith("-")
+    && !label.endsWith("-")
+  ));
 }
 
 function labelize(value) {

@@ -19,3 +19,17 @@ Render
 GitHub Pages
 Proton Mail
 Formspree
+
+Version 1.1 (In Progress)
+
+UX Improvements
+
+• Company Website replaces Domain
+
+• Automatic URL normalization
+
+• Friendly validation
+
+• Better first-time user experience
+
+• Reduced unnecessary scans

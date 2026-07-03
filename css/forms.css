@@ -14,6 +14,13 @@ label {
   letter-spacing: 0.01em;
 }
 
+.field__help {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.94rem;
+  line-height: 1.55;
+}
+
 input,
 textarea,
 select {
