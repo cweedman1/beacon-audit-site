@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://beaconaudit.com/sitemap.xml
+Sitemap: https://beacon-audit.com/sitemap.xml
