@@ -57,3 +57,40 @@ textarea {
   color: var(--muted);
   padding: 18px;
 }
+
+.contact-status {
+  color: var(--muted);
+}
+
+.contact-status p {
+  margin: 0 0 10px;
+}
+
+.contact-status p:last-child {
+  margin-bottom: 0;
+}
+
+.contact-status--success {
+  display: grid;
+  gap: 8px;
+}
+
+.contact-status--success h2 {
+  margin: 0 0 4px;
+}
+
+.contact-status--error {
+  border: 1px solid rgba(255, 111, 89, 0.36);
+  border-radius: 12px;
+  background: rgba(255, 111, 89, 0.07);
+  padding: 16px;
+}
+
+.contact-status[hidden] {
+  display: none;
+}
+
+.contact-question-list {
+  margin-top: 22px;
+  margin-bottom: 22px;
+}

@@ -3,10 +3,10 @@
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Contact Beacon Audit | Digital Stewardship Review</title>
-  <meta name="description" content="Contact Beacon Audit to discuss a plain-English website health review.">
+  <meta name="description" content="Contact Beacon Audit for help understanding, prioritizing, or implementing website health recommendations.">
   <link rel="canonical" href="https://beaconaudit.com/contact.html">
-  <meta property="og:title" content="Contact Beacon Audit"><meta property="og:description" content="Discuss a website health review."><meta property="og:type" content="website"><meta property="og:url" content="https://beaconaudit.com/contact.html"><meta property="og:image" content="https://beaconaudit.com/assets/images/contact.webp">
-  <meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Contact Beacon Audit"><meta name="twitter:description" content="Website review inquiries.">
+  <meta property="og:title" content="Contact Beacon Audit"><meta property="og:description" content="Ask about a website review, report recommendation, or implementation help."><meta property="og:type" content="website"><meta property="og:url" content="https://beaconaudit.com/contact.html"><meta property="og:image" content="https://beaconaudit.com/assets/images/contact.webp">
+  <meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Contact Beacon Audit"><meta name="twitter:description" content="Website review and implementation questions.">
   <link rel="icon" href="/assets/logo/favicon.ico" sizes="any"><link rel="icon" href="/assets/logo/favicon.png" type="image/png"><link rel="icon" href="/assets/logo/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/assets/logo/apple-touch-icon.png">
   
   <link rel="preload" href="/assets/images/contact-900.webp" as="image" media="(max-width: 860px)" fetchpriority="high">
@@ -27,14 +27,14 @@
       </div>
     </nav></header>
   <main>
-    <section class="hero hero--compact"><picture><source media="(max-width: 860px)" srcset="/assets/images/contact-900.webp" width="900" height="600" type="image/webp"><img class="hero__image" src="/assets/images/contact.webp" alt="Quiet desk for website consultation" width="1200" height="800" fetchpriority="high" decoding="async"></picture><div class="hero__content"><p class="eyebrow">Contact</p><h1>Ask for a website second opinion.</h1><p>Share the website, what you are trying to improve, and what decisions the review should help you make.</p></div></section>
-    <section class="section"><div class="container split"><form class="scan-panel form"><div class="field"><label for="name">Name</label><input id="name" name="name" autocomplete="name"></div><div class="field"><label for="email">Email</label><input id="email" name="email" type="email" autocomplete="email"></div><div class="field"><label for="message">Review need</label><textarea id="message" name="message"></textarea></div><button class="button button--primary" type="submit">Send inquiry</button></form><div><p class="eyebrow">Helpful details</p><h2>Start with the website and the question.</h2><p>Share the domain, your audience, and the improvements you are considering. Do not send passwords, private keys, or customer data through this static form.</p></div></div></section>
+    <section class="hero hero--compact"><picture><source media="(max-width: 860px)" srcset="/assets/images/contact-900.webp" width="900" height="600" type="image/webp"><img class="hero__image" src="/assets/images/contact.webp" alt="Quiet desk for website consultation" width="1200" height="800" fetchpriority="high" decoding="async"></picture><div class="hero__content"><p class="eyebrow">Contact</p><h1>Ask for a website second opinion.</h1><p>Already have a Beacon report? We can help explain the findings, prioritize improvements, or implement the recommendations.</p></div></section>
+    <section class="section"><div class="container split"><div><form class="scan-panel form" action="https://formspree.io/f/mvzjdgzv" method="POST" data-contact-form><input type="hidden" name="_subject" value="Beacon Audit contact inquiry"><div class="field"><label for="name">Name</label><input id="name" name="name" autocomplete="name" placeholder="Your name" required></div><div class="field"><label for="email">Email</label><input id="email" name="email" type="email" autocomplete="email" placeholder="you@example.com" required></div><div class="field"><label for="website">Website address</label><input id="website" name="website" type="url" inputmode="url" autocomplete="url" placeholder="https://example.com"></div><div class="field"><label for="message">What would you like help with?</label><textarea id="message" name="message" placeholder="Share the report question, recommendation, or improvement you are considering." required></textarea></div><div class="contact-status contact-status--error" data-contact-error hidden><p>We couldn't send your message right now.</p><p>Please try again or email:</p><p><a href="mailto:contact@beacon-audit.com">contact@beacon-audit.com</a></p></div><button class="button button--primary" type="submit">Send inquiry</button></form><div class="scan-panel contact-status contact-status--success" data-contact-success hidden tabindex="-1"><h2>Thank you.</h2><p>We've received your message.</p><p>We'll review it and get back to you as soon as we can.</p><p>If your question relates to a Beacon report, including the website address helps us respond more quickly.</p></div></div><div><p class="eyebrow">Why contact Beacon?</p><h2>Start with the website and the decision.</h2><p>Whether you need an independent second opinion or hands-on engineering assistance, Beacon is available to help make the next step clear.</p><ul class="feature-list contact-question-list"><li>Which recommendation should I fix first?</li><li>Is this a maintenance issue or a business risk?</li><li>Which improvements are worth doing now?</li><li>Can Beacon help implement these recommendations?</li></ul><p>Do not send passwords, private keys, API tokens, sensitive customer information, or private account access.</p><p>Prefer email? <a href="mailto:contact@beacon-audit.com">contact@beacon-audit.com</a></p></div></div></section>
   </main>
   <footer class="site-footer">
     <div class="container footer-grid">
       <div>
         <strong>Beacon Audit</strong>
-        <p>A product of EVO Engineering</p>
+        <p>A product of <a href="https://www.evo.engineering/" rel="noopener">EVO Engineering</a></p>
         <p>Clear.</p>
         <p>Practical.</p>
         <p>Plain English.</p>
@@ -52,5 +52,6 @@
     </div>
   </footer>
   <script src="/js/nav.js" defer></script>
+  <script src="/js/contact.js" defer></script>
 </body>
 </html>
