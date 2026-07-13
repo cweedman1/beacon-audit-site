@@ -32,8 +32,6 @@ def normalize_public_url(raw_url: str) -> str:
 
 def normalize_public_hostname(raw_hostname: str) -> str:
     hostname = raw_hostname.strip().lower().rstrip(".")
-    if hostname.startswith("www."):
-        hostname = hostname[4:]
     validate_hostname_syntax(hostname)
     return hostname
 

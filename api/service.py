@@ -3,6 +3,7 @@ from __future__ import annotations
 from concurrent.futures import ThreadPoolExecutor, TimeoutError
 import os
 from time import perf_counter
+from urllib.parse import urlparse
 
 from api.debug import DebugTrace
 from api.ops_logging import log_scan_failure, log_scan_success
@@ -33,9 +34,17 @@ class QuickScanService:
         scan_start = perf_counter()
         trace = DebugTrace(target_url=raw_url) if debug else None
         normalized_url: str | None = None
+        submitted_hostname = _hostname(raw_url)
+        validation_context: dict[str, str | None] = {
+            "submitted_hostname": submitted_hostname,
+            "validated_hostname": None,
+            "final_url": None,
+            "validation_failure_reason": None,
+        }
         try:
             validation_start = perf_counter()
             normalized_url = normalize_public_url(raw_url)
+            validation_context["validated_hostname"] = _hostname(normalized_url)
             if trace:
                 trace.stage(
                     "URL Validation",
@@ -45,7 +54,10 @@ class QuickScanService:
                     extra={"target_url": raw_url, "normalized_url": normalized_url},
                 )
             security_start = perf_counter()
-            validate_public_target(normalized_url)
+            redirect_validation = validate_public_target(normalized_url)
+            normalized_url = redirect_validation.final_url
+            validation_context["final_url"] = redirect_validation.final_url
+            validation_context["validated_hostname"] = _hostname(redirect_validation.final_url)
             if trace:
                 trace.stage(
                     "SSRF Protection",
@@ -56,17 +68,20 @@ class QuickScanService:
         except PublicAPIValidationError as exc:
             if trace:
                 trace.stage("URL Validation", success=False, summary=str(exc))
+            validation_context["validation_failure_reason"] = str(exc)
             log_scan_failure(
                 raw_url=raw_url,
                 failure_type="invalid_domain",
                 message=str(exc),
                 elapsed_ms=round((perf_counter() - scan_start) * 1000),
                 http_status=400,
+                **validation_context,
             )
             raise PublicAPIServiceError("invalid_url", WEBSITE_UNREACHABLE_MESSAGE, 400) from exc
         except PublicAPISecurityError as exc:
             if trace:
                 trace.stage("SSRF Protection", success=False, summary=str(exc))
+            validation_context["validation_failure_reason"] = str(exc)
             log_scan_failure(
                 raw_url=raw_url,
                 normalized_url=normalized_url,
@@ -74,6 +89,7 @@ class QuickScanService:
                 message=str(exc),
                 elapsed_ms=round((perf_counter() - scan_start) * 1000),
                 http_status=400,
+                **validation_context,
             )
             raise PublicAPIServiceError("blocked_target", WEBSITE_UNREACHABLE_MESSAGE, 400) from exc
 
@@ -82,6 +98,7 @@ class QuickScanService:
         future = executor.submit(self.engine.scan, normalized_url, audit_type="QuickScan")
         try:
             report = future.result(timeout=self.timeout_seconds)
+            report.metadata["public_validation"] = validation_context
             if trace:
                 trace.stage(
                     "QuickScan Orchestrator",
@@ -137,3 +154,10 @@ class QuickScanService:
             response.debug = trace.payload(report, normalized_url=normalized_url, response_elapsed_ms=response_elapsed_ms)
         log_scan_success(report)
         return response
+
+
+def _hostname(value: str | None) -> str | None:
+    if not value:
+        return None
+    parsed = urlparse(value if "://" in value else f"https://{value}")
+    return parsed.hostname.lower() if parsed.hostname else None

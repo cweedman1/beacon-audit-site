@@ -101,6 +101,8 @@ def validate_redirect_chain(url: str, *, max_redirects: int = 5) -> RedirectVali
             validate_public_host(host)
             validate_resolved_host(host)
             redirects.append(current)
+        except urllib.error.URLError as exc:
+            raise PublicAPISecurityError(f"Website validation request failed: {exc.reason}") from exc
     raise PublicAPISecurityError("Too many redirects")
 
 

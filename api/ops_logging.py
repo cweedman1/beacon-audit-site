@@ -43,6 +43,7 @@ def log_scan_success(report: AuditReport) -> None:
     lighthouse = _lighthouse_status(report)
     timing = report.metadata.get("timing", {}) if isinstance(report.metadata, dict) else {}
     debug_timing = report.metadata.get("debug_stage_timings", {}) if isinstance(report.metadata, dict) else {}
+    validation = _validation_context(report)
     _emit(
         "scan_completed",
         {
@@ -55,6 +56,7 @@ def log_scan_success(report: AuditReport) -> None:
             "fallback_reason": lighthouse.get("fallback_reason"),
             "http_status": lighthouse.get("http_status"),
             "stage_timings": _stage_timings(timing, debug_timing, lighthouse, report.elapsed_ms),
+            **validation,
         },
     )
 
@@ -71,6 +73,10 @@ def log_scan_failure(
     provider: str | None = None,
     fallback: bool | None = None,
     fallback_reason: str | None = None,
+    submitted_hostname: str | None = None,
+    validated_hostname: str | None = None,
+    final_url: str | None = None,
+    validation_failure_reason: str | None = None,
 ) -> None:
     _emit(
         "scan_failed",
@@ -85,6 +91,10 @@ def log_scan_failure(
             "fallback": fallback,
             "fallback_reason": fallback_reason,
             "http_status": http_status,
+            "submitted_hostname": submitted_hostname,
+            "validated_hostname": validated_hostname,
+            "final_url": final_url,
+            "validation_failure_reason": validation_failure_reason,
         },
     )
 
@@ -121,6 +131,19 @@ def _lighthouse_status(report: AuditReport) -> dict[str, Any]:
         status = report.metadata.get("lighthouse")
         if isinstance(status, dict):
             return status
+    return {}
+
+
+def _validation_context(report: AuditReport) -> dict[str, Any]:
+    if isinstance(report.metadata, dict):
+        validation = report.metadata.get("public_validation")
+        if isinstance(validation, dict):
+            return {
+                "submitted_hostname": validation.get("submitted_hostname"),
+                "validated_hostname": validation.get("validated_hostname"),
+                "final_url": validation.get("final_url"),
+                "validation_failure_reason": validation.get("validation_failure_reason"),
+            }
     return {}
 
 
