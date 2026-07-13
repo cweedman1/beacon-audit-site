@@ -531,12 +531,11 @@ function normalizeDomain(value) {
   if (!raw) return "";
   try {
     const withProtocol = /^https?:\/\//i.test(raw) ? raw : `https://${raw}`;
-    return new URL(withProtocol).hostname.replace(/^www\./i, "").replace(/\.$/, "");
+    return new URL(withProtocol).hostname.replace(/\.$/, "");
   } catch (error) {
     return raw
       .replace(/^https?:\/\//i, "")
       .split(/[/?#]/, 1)[0]
-      .replace(/^www\./i, "")
       .replace(/\.$/, "");
   }
 }
