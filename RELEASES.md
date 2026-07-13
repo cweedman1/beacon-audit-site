@@ -33,3 +33,17 @@ UX Improvements
 • Better first-time user experience
 
 • Reduced unnecessary scans
+
+Customer Observations
+
+Version 1.1
+
+• Tim entered treehuggers.com instead of texastreehuggers.com.
+
+Result:
+Users naturally paste or type whatever they believe the company website is.
+
+Decision:
+Normalize URLs automatically.
+Validate before launching Lighthouse.
+Use "Company Website" instead of "Domain."

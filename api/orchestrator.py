@@ -25,9 +25,9 @@ DEFAULT_SCANNERS: tuple[type[Scanner], ...] = (
 
 
 class AuditEngine:
-    def __init__(self, scanners: list[Scanner] | None = None, max_workers: int = 5) -> None:
+    def __init__(self, scanners: list[Scanner] | None = None, max_workers: int = 6) -> None:
         self.scanners = scanners or [scanner_type() for scanner_type in DEFAULT_SCANNERS]
-        self.max_workers = max_workers
+        self.max_workers = max(max_workers, len(self.scanners) + 1)
         self.scorer = BeaconScorer()
         self.opportunities = OpportunityEngine()
         self.technology = TechnologyFingerprinter()
@@ -41,7 +41,10 @@ class AuditEngine:
             if isinstance(scanner, LighthouseScanner):
                 scanner.audit_type = audit_type
 
-        with ThreadPoolExecutor(max_workers=min(self.max_workers, len(self.scanners))) as executor:
+        concurrent_started = perf_counter()
+        scanner_pool_elapsed_ms = 0
+        with ThreadPoolExecutor(max_workers=self.max_workers) as executor:
+            technology_future = executor.submit(self._technology_status, normalized_url)
             futures = {executor.submit(scanner.run, normalized_url): scanner.name for scanner in self.scanners}
             for future in as_completed(futures):
                 scanner_name = futures[future]
@@ -56,19 +59,24 @@ class AuditEngine:
                         failure_type="scanner_exception",
                         message=str(exc),
                     )
+                    technology_future.cancel()
+                    for pending in futures:
+                        pending.cancel()
                     raise
+            scanner_pool_elapsed_ms = round((perf_counter() - concurrent_started) * 1000)
 
-        results.sort(key=lambda result: result.scanner)
-        results = [self._normalize_result(result) for result in results]
-        findings: list[Finding] = [finding for result in results for finding in result.findings]
-        lighthouse_status = self._lighthouse_status(results)
-        scoring_started = perf_counter()
-        scores = self.scorer.score_results(findings, results)
-        scoring_elapsed_ms = round((perf_counter() - scoring_started) * 1000)
-        opportunities_started = perf_counter()
-        opportunities = self.opportunities.generate(findings)
-        opportunities_elapsed_ms = round((perf_counter() - opportunities_started) * 1000)
-        technology_status = self._technology_status(normalized_url)
+            results.sort(key=lambda result: result.scanner)
+            results = [self._normalize_result(result) for result in results]
+            findings: list[Finding] = [finding for result in results for finding in result.findings]
+            lighthouse_status = self._lighthouse_status(results)
+            scoring_started = perf_counter()
+            scores = self.scorer.score_results(findings, results)
+            scoring_elapsed_ms = round((perf_counter() - scoring_started) * 1000)
+            opportunities_started = perf_counter()
+            opportunities = self.opportunities.generate(findings)
+            opportunities_elapsed_ms = round((perf_counter() - opportunities_started) * 1000)
+            technology_status = technology_future.result()
+        concurrent_elapsed_ms = round((perf_counter() - concurrent_started) * 1000)
         scan_finished_at = datetime.now(UTC)
         elapsed_ms = round((perf_counter() - start) * 1000)
         summary = self._summary(normalized_url, scores.beacon_score, scores.grade, findings)
@@ -85,6 +93,9 @@ class AuditEngine:
             "debug_stage_timings": {
                 "scoring_time_ms": scoring_elapsed_ms,
                 "opportunity_builder_time_ms": opportunities_elapsed_ms,
+                "scanner_pool_time_ms": scanner_pool_elapsed_ms,
+                "concurrent_work_time_ms": concurrent_elapsed_ms,
+                "critical_path_time_ms": elapsed_ms,
             },
             "capability_matrix": capability_matrix(audit_type),
             "report_sections": section_contract(audit_type),

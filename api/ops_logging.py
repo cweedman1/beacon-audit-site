@@ -109,6 +109,9 @@ def _stage_timings(
         or (lighthouse.get("elapsed_ms") if lighthouse.get("provider_used") == "local_lighthouse" else None),
         "scoring_ms": debug_timing.get("scoring_time_ms"),
         "recommendation_generation_ms": debug_timing.get("opportunity_builder_time_ms"),
+        "scanner_pool_ms": debug_timing.get("scanner_pool_time_ms"),
+        "concurrent_work_ms": debug_timing.get("concurrent_work_time_ms"),
+        "critical_path_ms": debug_timing.get("critical_path_time_ms"),
         "total_scan_ms": elapsed_ms,
     }
 
