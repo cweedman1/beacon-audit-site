@@ -89,7 +89,6 @@
   transform: translateY(0);
   animation: beacon-panel-enter 220ms ease both;
   transition: opacity 220ms ease, transform 220ms ease, padding 220ms ease, border-color 220ms ease;
-  isolation: isolate;
 }
 
 .scan-progress__steps::before {
@@ -107,8 +106,6 @@
 }
 
 .scan-progress > * {
-  position: relative;
-  z-index: 1;
   min-width: 0;
 }
 
