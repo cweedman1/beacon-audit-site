@@ -92,13 +92,13 @@
   isolation: isolate;
 }
 
-.scan-progress::before {
+.scan-progress__steps::before {
   content: "";
   position: absolute;
   z-index: 0;
-  top: 24px;
-  right: 24px;
-  left: 24px;
+  top: 0;
+  right: 0;
+  left: 0;
   height: 1px;
   background: linear-gradient(90deg, transparent, rgba(216, 183, 92, 0.72), transparent);
   opacity: 0;
@@ -156,10 +156,13 @@
 }
 
 .scan-progress__steps {
+  position: relative;
+  isolation: isolate;
   display: grid;
   gap: 12px;
   padding: 0;
   margin: 0;
+  overflow: hidden;
   list-style: none;
 }
 
@@ -1076,7 +1079,7 @@
   .scan-progress__steps li,
   .scan-progress__steps li.is-active > span:last-child,
   .scan-progress__steps li.is-active .scan-progress__marker,
-  .scan-progress::before,
+  .scan-progress__steps::before,
   .scan-progress,
   .hero--compact,
   .hero--compact .hero__content,
