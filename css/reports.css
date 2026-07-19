@@ -174,7 +174,7 @@
   padding: 14px;
   color: var(--soft);
   opacity: 0.52;
-  transition: background 200ms ease, border-color 200ms ease, color 200ms ease, transform 200ms ease;
+  transition: background 200ms ease, border-color 200ms ease, color 200ms ease;
 }
 
 .scan-progress__steps li.is-active {
@@ -182,7 +182,10 @@
   background: rgba(216, 183, 92, 0.075);
   color: var(--text);
   opacity: 1;
-  transform: translateY(1px);
+}
+
+.scan-progress__steps li.is-active > span:last-child {
+  display: block;
   animation: beacon-active-step 1600ms ease-in-out infinite;
 }
 
@@ -1070,6 +1073,7 @@
 @media (prefers-reduced-motion: reduce) {
   .scan-report--enter,
   .scan-progress__steps li,
+  .scan-progress__steps li.is-active > span:last-child,
   .scan-progress__steps li.is-active .scan-progress__marker,
   .scan-progress::before,
   .scan-progress,
