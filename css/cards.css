@@ -112,12 +112,28 @@
 
 .topic-card h2 {
   margin-bottom: 12px;
-  font-size: clamp(1.35rem, 2vw, 1.72rem);
+  font-size: clamp(1.25rem, 1.86vw, 1.58rem);
+  font-weight: 600;
   line-height: 1.18;
 }
 
 .topic-card p:not(.card__meta) {
   margin-bottom: 0;
+}
+
+.knowledge-release-marker {
+  display: grid;
+  gap: 3px;
+  margin-top: 30px;
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.55;
+  text-align: center;
+}
+
+.knowledge-release-marker span:first-child {
+  color: var(--soft);
+  font-weight: 650;
 }
 
 .topic-links {
