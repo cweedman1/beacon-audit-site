@@ -112,6 +112,8 @@
 
 .topic-card h2 {
   margin-bottom: 12px;
+  font-size: clamp(1.35rem, 2vw, 1.72rem);
+  line-height: 1.18;
 }
 
 .topic-card p:not(.card__meta) {

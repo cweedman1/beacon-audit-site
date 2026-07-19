@@ -78,6 +78,7 @@
 }
 
 .scan-progress {
+  position: relative;
   display: grid;
   grid-template-columns: minmax(0, 0.68fr) minmax(320px, 0.82fr);
   gap: 36px;
@@ -88,6 +89,26 @@
   transform: translateY(0);
   animation: beacon-panel-enter 220ms ease both;
   transition: opacity 220ms ease, transform 220ms ease, padding 220ms ease, border-color 220ms ease;
+  isolation: isolate;
+}
+
+.scan-progress::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  top: 24px;
+  right: 24px;
+  left: 24px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(216, 183, 92, 0.72), transparent);
+  opacity: 0;
+  transform: translateY(0);
+  animation: beacon-scan-line 2800ms ease-in-out infinite;
+}
+
+.scan-progress > * {
+  position: relative;
+  z-index: 1;
 }
 
 .scan-progress.is-collapsing {
@@ -161,7 +182,8 @@
   background: rgba(216, 183, 92, 0.075);
   color: var(--text);
   opacity: 1;
-  transform: translateY(-1px);
+  transform: translateY(1px);
+  animation: beacon-active-step 1600ms ease-in-out infinite;
 }
 
 .scan-progress__steps li.is-complete {
@@ -1049,6 +1071,7 @@
   .scan-report--enter,
   .scan-progress__steps li,
   .scan-progress__steps li.is-active .scan-progress__marker,
+  .scan-progress::before,
   .scan-progress,
   .hero--compact,
   .hero--compact .hero__content,
@@ -1085,5 +1108,36 @@
 
   100% {
     box-shadow: 0 0 0 0 rgba(216, 183, 92, 0);
+  }
+}
+
+@keyframes beacon-scan-line {
+  0% {
+    opacity: 0;
+    transform: translateY(0);
+  }
+
+  16% {
+    opacity: 0.42;
+  }
+
+  72% {
+    opacity: 0.18;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(calc(100% + 22rem));
+  }
+}
+
+@keyframes beacon-active-step {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(2px);
   }
 }
